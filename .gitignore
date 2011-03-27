@@ -1,0 +1,9 @@
+blib
+_build
+Build
+MANIFEST.*
+META.yml
+.sw?
+*.sw?
+*.tar.gz
+WWW-GoodData-*

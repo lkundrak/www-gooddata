@@ -1,0 +1,6 @@
+bin/gdc				Client utility for GoodData REST-ful API
+lib/WWW/GoodData.pm		Client library for GoodData REST-ful API
+lib/WWW/GoodData/Agent.pm	HTTP client for GoodData JSON-based API
+Build.PL			Build script
+MANIFEST			This list of files
+META.yml			Distribution Metadata

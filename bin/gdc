@@ -1,0 +1,231 @@
+#!/usr/bin/perl
+
+=head1 NAME
+
+gdc - Client utility for GoodData REST-ful API
+
+=head1 SYNOPSIS
+
+gdc [global options] <command> [command options]
+
+=head1 DESCRIPTION
+
+B<gdc> is the command-line and interactive client for GoodData REST-ful
+service API built on top of L<WWW::GoodData> client library.
+
+=cut
+
+use WWW::GoodData;
+use Getopt::Long qw/GetOptionsFromArray/;
+use Pod::Usage;
+use Text::ParseWords;
+
+use strict;
+use warnings;
+
+# Global context
+my $gdc = new WWW::GoodData;
+my $command = 'shell';
+my $user;
+my $password;
+my $project;
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<-h>, B<--help>
+
+Print a brief help message and exits.
+
+=item B<-H>, B<--man>
+
+Prints the manual page and exits.
+
+=back
+
+=cut
+
+new Getopt::Long::Parser (
+	config => [qw/require_order/]
+)->getoptions (
+	'u|user=s' => \$user,
+	'p|password=s' => \$password,
+	'P|project=s' => \$project,
+) or pod2usage (2);
+$command = shift if @ARGV;
+
+=head1 COMMANDS
+
+=cut 
+
+my %actions = (
+	login => \&login,
+	lsprojects => \&lsprojects,
+	help => \&help,
+	shell => \&shell,
+);
+
+=head2 shell
+
+Launch an interactive client session.
+
+This is the default action that is taken unless another
+command is specified.
+
+=cut
+
+sub shell
+{
+	while (1) {
+		print "> ";
+		my $line = <>;
+		return unless defined $line;
+		my ($command, @args) = shellwords ($line);
+		if (exists $actions{$command}) {
+			eval { $actions{$command}->(@args) };
+			warn $@ if $@;
+		} else {
+			warn 'No such command';
+		}
+	}
+}
+
+=head2 login [user] [password]
+
+Verify user identity and obtain an authorization token.
+If no credentials are supplied, global ones are used.
+
+If the password is not specified, it is requested
+from terminal provided terminal echo can be turned off.
+
+This action is taken implicitly if user name has been specified.
+
+=over 4
+
+=item B<-u>, B<--user> B<< <email> >>
+
+Alternative way to specifiy user login.
+
+=item B<-p>, B<--password>
+
+Alternative way to specifiy user password.
+
+=back
+
+=cut
+
+sub login
+{
+	undef $password;
+	GetOptionsFromArray (\@_,
+		'u|user=s' => \$user,
+		'p|password=s' => \$password,
+	) or die 'Bad arguments to lsprojects';
+	$user = shift if @_;
+	$password = shift if @_;
+	die 'Extra arguments' if @_;
+	die 'No user name given' unless $user;
+
+	# stty might not be portable to NT and such
+	if (not defined $password and -t STDIN) {
+		system 'stty -echo'
+			and die 'Can not ask for password securely';
+		print 'Password: ';
+		chomp ($password = <>);
+		print "\n";
+		system 'stty echo';
+	}
+
+	$gdc->login ($user, $password);
+}
+
+=head2 lsprojects
+
+Print a list of available projects.
+
+=over 4
+
+=item B<-v>, B<--long>
+
+Add unnecessary details
+
+=back
+
+=cut
+
+sub lsprojects
+{
+	my $long;
+
+	GetOptionsFromArray (\@_,
+		'v|long' => \$long,
+	) or die 'Bad arguments to lsprojects';
+	die 'Extra arguments' if @_;
+
+	foreach my $project ($gdc->projects) {
+		if ($long) {
+			print "Identifier: ".$project->{identifier}."\n";
+			print "\tTitle: ".$project->{title}."\n";
+			print "\tSummary: ".$project->{summary}."\n";
+			print "\tLink: ".$project->{link}."\n";
+		} else {
+			print $project->{identifier}.' ';
+			print $project->{title}."\n";
+		}
+	}
+}
+
+=head2 help
+
+Print list of available commands.
+
+=cut
+
+sub help
+{
+	GetOptionsFromArray (\@_)
+		or die 'Bad arguments to help';
+	die 'Extra arguments' if @_;
+
+	print map { "$_\n" } 'Valid commands: ',
+		map { "\t$_" } keys %actions ;
+}
+
+$gdc->login ($user, $password) if defined $user;
+pod2usage ("No such command exists: '$command'")
+	unless exists $actions{$command};
+$actions{$command}->(@ARGV);
+
+=back
+
+=head1 SEE ALSO
+
+=over
+
+=item *
+
+L<https://secure.gooddata.com/gdc/> -- Browsable GoodData API
+
+=item *
+
+L<WWW::GoodData> -- Client library for GoodData
+
+=item *
+
+L<LWP::UserAgent> -- Perl HTTP client
+
+=back
+
+=head1 COPYRIGHT
+
+Copyright 2011, Lubomir Rintel
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=head1 AUTHOR
+
+Lubomir Rintel C<lkundrak@v3.sk>
+
+=cut
