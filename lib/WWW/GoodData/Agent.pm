@@ -117,7 +117,8 @@ sub request
 	return $response if ref $response eq 'HASH';
 
 	# Decode
-	my $decoded = $response->header ('Content-Type') eq 'application/json'
+	my $decoded = $response->content and
+		$response->header ('Content-Type') eq 'application/json'
 		? decode_json ($response->content)
 		: { raw => $response->content };
 
