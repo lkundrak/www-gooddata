@@ -19,6 +19,7 @@ use WWW::GoodData;
 use Getopt::Long qw/GetOptionsFromArray/;
 use Pod::Usage;
 use Text::ParseWords;
+use Term::ReadLine;
 
 use strict;
 use warnings;
@@ -78,10 +79,11 @@ command is specified.
 
 sub shell
 {
+	my $readline = new Term::ReadLine ('WWW::GoodData shell');
 	while (1) {
-		print "> ";
-		my $line = <>;
+		my $line = $readline->readline ("> ");
 		return unless defined $line;
+		$readline->addhistory ($line) if $line;
 		my ($command, @args) = shellwords ($line);
 		if (exists $actions{$command}) {
 			eval { $actions{$command}->(@args) };
