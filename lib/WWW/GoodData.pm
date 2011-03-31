@@ -8,7 +8,7 @@ WWW::GoodData - Client library for GoodData REST-ful API
 
   use WWW::GoodData;
   my $gdc = new WWW::GoodData;
-  print $gdc->uri ('md', { title => 'My Project' });
+  print $gdc->get_uri ('md', { title => 'My Project' });
 
 =head1 DESCRIPTION
 

@@ -121,7 +121,7 @@ sub login
 	GetOptionsFromArray (\@_,
 		'u|user=s' => \$user,
 		'p|password=s' => \$password,
-	) or die 'Bad arguments to lsprojects';
+	) or die 'Bad arguments to login';
 	$user = shift if @_;
 	$password = shift if @_;
 	die 'Extra arguments' if @_;
