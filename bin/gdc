@@ -201,6 +201,7 @@ sub rmproject
 	) or die 'Bad arguments to rmproject';
 	$project = shift if @_;
 	die 'Extra arguments' if @_;
+	die 'No project name given' unless $project;
 
 	$gdc->delete_project ($project);
 }
