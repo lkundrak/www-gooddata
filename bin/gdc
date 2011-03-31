@@ -62,6 +62,7 @@ $command = shift if @ARGV;
 my %actions = (
 	login => \&login,
 	lsprojects => \&lsprojects,
+	rmproject => \&rmproject,
 	help => \&help,
 	shell => \&shell,
 );
@@ -175,6 +176,33 @@ sub lsprojects
 		}
 	}
 }
+
+=head2 rmproject
+
+Delete a project.
+
+=over 4
+
+=item B<-P>, B<--project>
+
+Name of the project (first column from B<lsprojects>).
+
+=back
+
+=cut
+
+sub rmproject
+{
+	my $project = $project;
+	GetOptionsFromArray (\@_,
+		'P|project=s' => \$project,
+	) or die 'Bad arguments to rmproject';
+	$project = shift if @_;
+	die 'Extra arguments' if @_;
+
+	$gdc->delete_project ($project);
+}
+
 
 =head2 help
 

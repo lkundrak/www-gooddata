@@ -91,6 +91,18 @@ sub post
 	return $self->SUPER::post ($uri, @args);
 }
 
+=item delete URI
+
+Convenience method for constructing and issuing a DELETE request.
+
+=cut
+
+sub delete
+{
+	my ($self, $uri) = @_;
+	return $self->request (new HTTP::Request (DELETE => $uri));
+}
+
 =item request PARAMS
 
 This call is common for all request types.

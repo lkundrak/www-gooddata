@@ -186,6 +186,22 @@ sub projects
 	shift->get_links (qw/md project/);
 }
 
+=item B<delete_project>
+
+Delete a project given its identifier.
+
+=cut
+
+sub delete_project
+{
+	my $self = shift;
+	my $project = shift;
+
+	my $uri = $self->get_uri ('projects', { identifier => $project })
+		or die "No such project: $project";
+	$self->{agent}->delete ($uri);
+}
+
 =back
 
 =head1 SEE ALSO
