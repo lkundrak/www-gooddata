@@ -113,8 +113,10 @@ sub get_links
 		my $this_link = $_;
 		# Filter out those, who lack any of our keys or
 		# hold a different value for it.
-		not map { not exists $link->{$_} or
-			$link->{$_} ne $this_link->{$_} ? 1 : () } keys %$link
+		not map { not exists $link->{$_}
+			or not exists $this_link->{$_}
+			or $link->{$_} ne $this_link->{$_}
+			? 1 : () } keys %$link
 	} @$$this_links;
 }
 
