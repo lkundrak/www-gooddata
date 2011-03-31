@@ -66,11 +66,22 @@ sub get_links
 {
 	my $self = shift;
 	@_ = map { ref $_ ? $_ : { category => $_ } } @_;
+
 	my $link = pop;
 	my @path = @_;
 
 	my $this_links;
 	my $uri;
+
+	# Projects are not navigatable, but resources underneath it
+	# are project ids, same as in md hierarchy...
+	my $projecthack;
+	if (scalar @path == 1 and $path[0]->{category} and $path[0]->{category} eq 'projects') {
+		# Convert md links into project ones, if we did use the fake path
+		return map { $_->{link} =~ s/^\/gdc\/md/\/gdc\/projects/;
+			$_->{category} = 'projects' if $_->{category} eq 'md';
+			$_ } $self->get_links ('md', $link);
+	}
 
 	unless (@path) {
 		# Root
@@ -85,7 +96,16 @@ sub get_links
 	# Not yet cached
 	unless ($$this_links) {
 		my $response = $self->{agent}->get ($uri);
-		$$this_links = $response->{about}{links};
+		if (exists $response->{project}) {
+			# Not only there are no links to the project
+			# structure; the links in it itself seem weird...
+			$$this_links = [ map {{
+				category => $_,
+				link => $response->{project}{links}{$_},
+				}} keys %{$response->{project}{links}} ];
+		} else {
+			$$this_links = $response->{about}{links};
+		}
 	}
 
 	# Return matching links
