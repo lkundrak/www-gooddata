@@ -1,0 +1,54 @@
+Issues with the API:
+
+* /gdc/project is not navigatable
+
+/gdc/project/<project_id> hierarchy exists, but there are no links
+reachable from root that would point into it. On the other hand,
+/gdc/md returns navigatable list of projects and is linked from
+/gdc/projects as well. This list of project should probably be moved from
+/gdc/md to /gdc/projects.
+
+* Some error responses (notably token failures) don't respect Accept
+
+They always return HTML responses, since Apache's auth modules are too
+high in the processing stack. Nothing could probably be done about this.
+
+* Certain errors return different structures than others
+
+Some are { error => { message => ..., parameters => [...] }}, while others
+lack the error key:
+
+'{"parameters":[],"component":"Account::Login::AuthShare",
+        "message":"Bad Login or Password\\"!"}',
+
+* 401 responses don't tell us how to authenticate
+
+Missing an WWW-Authenticate header is a violation of RFC 2616.
+Values like 'GoodData cookie=GDCAuthTT' or
+'GoodData login=/gdc/account/login' might be more helpful.
+
+For now, we can tell that we need to refresh the token only by following
+a redirect that's sent only to browsers (we pretend to be one by accepting
+application/xhtml+xml).
+
+* No charset information
+
+Content-Encoding header is not present, nor is MIME type in Content-Type
+(or multipart parts) enriched with charset= key.
+
+* DELETE /gdc/md/<project_id> returns 200
+
+And same contant as GET of the resource.
+
+* Broken empty responses handling
+
+They should have 204 return code and no Content-Type header.
+
+* DELETE /gdc/projects/<project_id> returns ""
+
+It should be empty.
+
+* 401 Error message without login makes little sense
+
+When requesting authenticated resource without SST, only "/gdc/account/login"
+message is gotten.
