@@ -64,6 +64,7 @@ my %actions = (
 	login => \&login,
 	lsprojects => \&lsprojects,
 	rmproject => \&rmproject,
+	mkproject => \&mkproject,
 	help => \&help,
 	shell => \&shell,
 );
@@ -205,6 +206,42 @@ sub rmproject
 	die 'No project name given' unless $project;
 
 	$gdc->delete_project ($project);
+}
+
+
+=head2 mkproject [title] [summary]
+
+Create a project.
+
+=over 4
+
+=item B<-t>, B<--title>
+
+Title of the project.
+
+=item B<-s>, B<--summary>
+
+Descriptive summary of the project.
+
+=back
+
+=cut
+
+sub mkproject
+{
+	my $title;
+	my $summary = '';
+
+	GetOptionsFromArray (\@_,
+		't|title=s' => \$title,
+		's|summary=s' => \$summary,
+	) or die 'Bad arguments to mkproject';
+	$title = shift if @_;
+	$summary = shift if @_;
+	die 'Extra arguments' if @_;
+	die 'No project title given' unless $title;
+
+	$project = $gdc->create_project ($title, $summary);
 }
 
 

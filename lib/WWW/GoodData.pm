@@ -222,6 +222,34 @@ sub delete_project
 	$self->{agent}->delete ($uri);
 }
 
+=item B<create_project> TITLE SUMMARY
+
+Create a project given its title and optionally summary,
+return its identifier.
+
+=cut
+
+sub create_project
+{
+	my $self = shift;
+	my $title = shift or die 'No title given';
+	my $summary = shift || '';
+
+	# The redirect magic does not work for POSTs and we can't really
+	# handle 401s until the API provides reason for them...
+	$self->{agent}->get ($self->get_uri ('token'));
+
+	return $self->{agent}->post ($self->get_uri ('projects'), {
+		project => {
+			# No hook to override this; use web UI
+			content => { guidedNavigation => 1 },
+			meta => {
+				summary => $summary,
+				title => $title,
+			}
+	}})->{uri};
+}
+
 =back
 
 =head1 SEE ALSO
