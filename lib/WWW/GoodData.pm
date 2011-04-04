@@ -186,7 +186,7 @@ sub projects
 	shift->get_links (qw/md project/);
 }
 
-=item B<delete_project>
+=item B<delete_project> IDENTIFIER
 
 Delete a project given its identifier.
 
