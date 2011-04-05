@@ -217,7 +217,10 @@ sub delete_project
 	my $self = shift;
 	my $project = shift;
 
-	my $uri = $self->get_uri ('projects', { identifier => $project })
+	# Instead of directly DELETE-ing the URI gotten, we check
+	# the existence of a project with such link, as a sanity check
+	my $uri = $self->get_uri (new URI ($self->{login}{userLogin}{profile}),
+		'projects', { category => 'project', link => $project })
 		or die "No such project: $project";
 	$self->{agent}->delete ($uri);
 }
