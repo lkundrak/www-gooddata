@@ -168,7 +168,7 @@ sub login
 	my $self = shift;
 	my ($login, $password) = @_;
 
-	return $self->{agent}->post ($self->get_uri ('login'),
+	$self->{login} = $self->{agent}->post ($self->get_uri ('login'),
 		{postUserLogin => {
 			login => $login,
 			password => $password,
