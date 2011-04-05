@@ -200,7 +200,10 @@ Return array of links to project resources on metadata server.
 
 sub projects
 {
-	shift->get_links (qw/md project/);
+	my $self = shift;
+	die 'Not logged in' unless $self->{login};
+	$self->get_links (new URI ($self->{login}{userLogin}{profile}),
+		qw/projects project/);
 }
 
 =item B<delete_project> IDENTIFIER

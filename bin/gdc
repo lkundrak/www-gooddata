@@ -168,12 +168,13 @@ sub lsprojects
 
 	foreach my $project ($gdc->projects) {
 		if ($long) {
-			print "Identifier: ".$project->{identifier}."\n";
+			print "Link: ".$project->{link}."\n";
 			print "\tTitle: ".$project->{title}."\n";
 			print "\tSummary: ".$project->{summary}."\n";
-			print "\tLink: ".$project->{link}."\n";
+			print "\tCreated: ".$project->{created}."\n";
+			print "\tUpdated: ".$project->{updated}."\n";
 		} else {
-			print $project->{identifier}.' ';
+			print $project->{link}.' ';
 			print $project->{title}."\n";
 		}
 	}
