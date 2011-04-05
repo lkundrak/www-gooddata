@@ -61,55 +61,20 @@ sub new
 }
 
 # API hierarchy traversal Cache
-our $links;
+our %links;
 sub get_links
 {
 	my $self = shift;
-	@_ = map { ref $_ ? $_ : { category => $_ } } @_;
+	my $root = ref $_[0] ? shift : $root;
+	my @path = map { ref $_ ? $_ : { category => $_ } } @_;
+	my $link = shift @path;
 
-	my $link = pop;
-	my @path = @_;
-
-	my $this_links;
-	my $uri;
-
-	# Projects are not navigatable, but resources underneath it
-	# are project ids, same as in md hierarchy...
-	my $projecthack;
-	if (scalar @path == 1 and $path[0]->{category} and $path[0]->{category} eq 'projects') {
-		# Convert md links into project ones, if we did use the fake path
-		return map { $_->{link} =~ s/^\/gdc\/md/\/gdc\/projects/;
-			$_->{category} = 'projects' if $_->{category} eq 'md';
-			$_ } $self->get_links ('md', $link);
+	unless ($links{$root}) {
+		my $response = $self->{agent}->get ($root);
+		$links{$root} = $response->{about}{links};
 	}
 
-	unless (@path) {
-		# Root
-		$uri = '';
-		$this_links = \$links;
-	} else {
-		my ($entry) = $self->get_links (@path);
-		$uri = $entry->{link} or return ();
-		$this_links = \$entry->{children};
-	}
-
-	# Not yet cached
-	unless ($$this_links) {
-		my $response = $self->{agent}->get ($uri);
-		if (exists $response->{project}) {
-			# Not only there are no links to the project
-			# structure; the links in it itself seem weird...
-			$$this_links = [ map {{
-				category => $_,
-				link => $response->{project}{links}{$_},
-				}} keys %{$response->{project}{links}} ];
-		} else {
-			$$this_links = $response->{about}{links};
-		}
-	}
-
-	# Return matching links
-	return grep {
+	my @matches = grep {
 		my $this_link = $_;
 		# Filter out those, who lack any of our keys or
 		# hold a different value for it.
@@ -117,7 +82,16 @@ sub get_links
 			or not exists $this_link->{$_}
 			or $link->{$_} ne $this_link->{$_}
 			? 1 : () } keys %$link
-	} @$$this_links;
+	} @{$links{$root}};
+
+	# Fully resolved
+	return @matches unless @path;
+
+	die 'Ambigious path' unless scalar @matches == 1;
+	my $new_root = new URI ($matches[0]->{link});
+	$new_root = $new_root->abs ($root);
+
+	return $self->get_links ($new_root, @path);
 }
 
 =item B<links> PATH
@@ -140,7 +114,7 @@ sub links
 {
 	my @links = get_links @_;
 	return @links if @links;
-	undef $links;
+	%links = ();
 	return get_links @_;
 }
 
