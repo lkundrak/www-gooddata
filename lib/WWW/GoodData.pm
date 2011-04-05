@@ -71,7 +71,50 @@ sub get_links
 
 	unless ($links{$root}) {
 		my $response = $self->{agent}->get ($root);
-		$links{$root} = $response->{about}{links};
+		# Various ways to get the links
+		if (exists $response->{about}) {
+			# Ordinary structure with about section
+			$links{$root} = $response->{about}{links};
+		} elsif (scalar keys %$response == 1) {
+			my @elements = ($response);
+			my ($structure) = keys %$response;
+
+			# Aggregated resources (/gdc/account/profile/666/projects)
+			@elements = @{$response->{$structure}}
+				if ref $response->{$structure} eq 'ARRAY';
+
+			$links{$root} = [];
+			foreach my $element (@elements) {
+				my $root = $root;
+				my ($type) = keys %$element;
+
+				# Metadata with interesting information outside "links"
+				if (exists $element->{$type}{links}{self}
+					and exists $element->{$type}{meta}) {
+					push @{$links{$root}}, {
+						%{$element->{$type}{meta}},
+						category => $type,
+						structure => $structure,
+						link => $element->{$type}{links}{self},
+					};
+					$root = $element->{$type}{links}{self};
+				}
+
+				# The links themselves
+				foreach my $category (keys %{$element->{$type}{links}}) {
+					my $link = $element->{$type}{links}{$category};
+					push @{$links{$root}}, {
+						structure => $structure,
+						category => $category,
+						type => $type,
+						link => $link,
+					};
+				}
+			}
+
+		} else {
+			die 'No links';
+		}
 	}
 
 	my @matches = grep {
