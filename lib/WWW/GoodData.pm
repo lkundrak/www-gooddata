@@ -261,6 +261,10 @@ sub create_project
 
 =item *
 
+L<http://developer.gooddata.com/api/> -- API documentation
+
+=item *
+
 L<https://secure.gooddata.com/gdc/> -- Browsable GoodData API
 
 =item *

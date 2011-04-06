@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-gdc - Client utility for GoodData REST-ful API
+gdc - Client utility for GoodData on-demand Business Intelligence platform
 
 =head1 SYNOPSIS
 
@@ -145,7 +145,7 @@ sub login
 	$gdc->login ($user, $password);
 }
 
-=head2 project
+=head2 project [uri]
 
 Change or print the default project URI. Default project is used
 by various commands involving projects, including B<mkproject> and
@@ -215,7 +215,7 @@ sub lsprojects
 	}
 }
 
-=head2 rmproject
+=head2 rmproject [uri]
 
 Delete a project.
 
@@ -245,7 +245,7 @@ sub rmproject
 }
 
 
-=head2 mkproject [title] [summary]
+=head2 mkproject <title> [summary]
 
 Create a project.
 
@@ -301,8 +301,6 @@ $gdc->login ($user, $password) if defined $user;
 pod2usage ("No such command exists: '$command'")
 	unless exists $actions{$command};
 $actions{$command}->(@ARGV);
-
-=back
 
 =head1 SEE ALSO
 
