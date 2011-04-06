@@ -7,7 +7,7 @@ my $build = Module::Build->new(
 	module_name => 'WWW::GoodData',
 	license => 'perl',
 	dist_author => 'Lubomir Rintel <lkundrak@v3.sk>',
-	dist_version => '0.3',
+	dist_version => '0.4',
 	meta_merge => {
 		resources => {
 			bugtracker => 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=WWW-GoodData',
