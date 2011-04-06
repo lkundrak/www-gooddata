@@ -18,6 +18,7 @@ my $build = Module::Build->new(
 		'Getopt::Long' => 0,
 		'Pod::Usage' => 0,
 		'Text::ParseWords' => 0,
+		'IO::Socket::SSL' => 0,
 	},
 	build_requires => {}
 );
