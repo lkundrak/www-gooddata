@@ -65,6 +65,7 @@ my %actions = (
 	lsprojects => \&lsprojects,
 	rmproject => \&rmproject,
 	mkproject => \&mkproject,
+	project => \&project,
 	help => \&help,
 	shell => \&shell,
 );
@@ -144,6 +145,39 @@ sub login
 	$gdc->login ($user, $password);
 }
 
+=head2 project
+
+Change or print the default project URI. Default project is used
+by various commands involving projects, including B<mkproject> and
+B<rmproject>.
+
+=over 4
+
+=item B<-p>, B<--project>
+
+Project URI.
+No checking is done with the project URI.
+
+=back
+
+=cut
+
+sub project
+{
+	my $this_project;
+	GetOptionsFromArray (\@_,
+		'p|project' => \$this_project,
+	) or die 'Bad arguments to lsprojects';
+	$this_project = shift if @_;
+	die 'Extra arguments' if @_;
+
+	if ($this_project) {
+		$project = $this_project;
+	} else {
+		print "$project\n";
+	}
+}
+
 =head2 lsprojects
 
 Print a list of available projects.
@@ -190,6 +224,8 @@ Delete a project.
 =item B<-P>, B<--project>
 
 Name of the project (first column from B<lsprojects>).
+Default project (see B<project>, B<mkproject> and global B<<--project>>
+option) is used if none is specified.
 
 =back
 
