@@ -43,6 +43,25 @@ Print a brief help message and exits.
 
 Prints the manual page and exits.
 
+=item B<-u>, B<--user> B<< <email> >>
+
+Use the identity of specified user.
+See also the B<login> command.
+
+=item B<-p>, B<--password>
+
+Log in on start, provided B<--user> option was set as well.
+
+=item B<-P>, B<--project>
+
+Project URI. It is used as a default value for commands that
+accept project URI option (such as B<rmproject> and B<lsreports>)
+and can be changed from within the shell (see B<project>
+and B<mkproject> commands).
+
+No checking is done with the project URI util a command that
+acts upon the project is issued.
+
 =back
 
 =cut
@@ -187,7 +206,7 @@ Print a list of available projects.
 
 =item B<-v>, B<--long>
 
-Add unnecessary details
+Add unnecessary details.
 
 =back
 
@@ -224,9 +243,8 @@ Delete a project.
 
 =item B<-P>, B<--project>
 
-Name of the project (first column from B<lsprojects>).
-Default project (see B<project>, B<mkproject> and global B<<--project>>
-option) is used if none is specified.
+Set or override the project to act on.
+See global B<--project> option for the detailed description.
 
 =back
 
@@ -244,7 +262,6 @@ sub rmproject
 
 	$gdc->delete_project ($project);
 }
-
 
 =head2 mkproject <title> [summary]
 
