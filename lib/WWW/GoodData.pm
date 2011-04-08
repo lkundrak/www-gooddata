@@ -222,8 +222,8 @@ sub delete_project
 
 	# Instead of directly DELETE-ing the URI gotten, we check
 	# the existence of a project with such link, as a sanity check
-	my $uri = $self->get_uri (new URI ($self->{login}{userLogin}{profile}),
-		'projects', { category => 'project', link => $project })
+	my $uri = $self->get_uri (new URI ($project),
+		{ category => 'self', type => 'project' }) # Validate it's a project
 		or die "No such project: $project";
 	$self->{agent}->delete ($uri);
 }
