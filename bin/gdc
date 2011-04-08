@@ -66,6 +66,7 @@ my %actions = (
 	rmproject => \&rmproject,
 	mkproject => \&mkproject,
 	project => \&project,
+	lsreports => \&lsreports,
 	help => \&help,
 	shell => \&shell,
 );
@@ -280,6 +281,51 @@ sub mkproject
 	$project = $gdc->create_project ($title, $summary);
 }
 
+=head2 lsreports [project]
+
+Print a list of reports in a project.
+
+=over 4
+
+=item B<-P>, B<--project>
+
+Set or override the project to act on.
+See global B<--project> option for the detailed description.
+
+=item B<-v>, B<--long>
+
+Add unnecessary details.
+
+=back
+
+=cut
+
+sub lsreports
+{
+	my $long;
+	my $project = $project;
+
+	GetOptionsFromArray (\@_,
+		'v|long' => \$long,
+		'P|project' => \$project,
+	) or die 'Bad arguments to lsprojects';
+	$project = shift if @_;
+	die 'Extra arguments' if @_;
+	die 'No project URI given' unless $project;
+
+	foreach my $report ($gdc->reports ($project)) {
+		if ($long) {
+			print "Link: ".$report->{link}."\n";
+			print "\tTitle: ".$report->{title}."\n";
+			print "\tSummary: ".$report->{summary}."\n";
+			print "\tCreated: ".$report->{created}."\n";
+			print "\tUpdated: ".$report->{updated}."\n";
+		} else {
+			print $report->{link}.' ';
+			print $report->{title}."\n";
+		}
+	}
+}
 
 =head2 help
 

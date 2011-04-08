@@ -256,6 +256,24 @@ sub create_project
 	}})->{uri};
 }
 
+=item B<reports> PROJECT
+
+Return array of links to repoort resources on metadata server.
+
+=cut
+
+sub reports
+{
+	my $self = shift;
+	my $project = shift;
+
+	die 'Not logged in' unless $self->{login};
+	$self->get_links (new URI ($project),
+		{ category => 'self', type => 'project' }, # Validate it's a project
+		qw/metadata query reports/, {});
+}
+
+
 =back
 
 =head1 SEE ALSO
