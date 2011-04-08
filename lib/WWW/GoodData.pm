@@ -75,6 +75,9 @@ sub get_links
 		if (exists $response->{about}) {
 			# Ordinary structure with about section
 			$links{$root} = $response->{about}{links};
+		} elsif (exists $response->{query} and exists $response->{query}{entries}) {
+			# Inconsistent query entries
+			$links{$root} = $response->{query}{entries};
 		} elsif (scalar keys %$response == 1) {
 			my @elements = ($response);
 			my ($structure) = keys %$response;
