@@ -107,6 +107,7 @@ sub shell
 		return unless defined $line;
 		$readline->addhistory ($line) if $line;
 		my ($command, @args) = shellwords ($line);
+		next unless $command;
 		if (exists $actions{$command}) {
 			eval { $actions{$command}->(@args) };
 			warn $@ if $@;
