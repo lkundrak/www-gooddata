@@ -129,10 +129,9 @@ sub request
 	return $response if ref $response eq 'HASH';
 
 	# Decode
-	my $decoded = ($response->content and $response->content ne '""' and
-		$response->header ('Content-Type') eq 'application/json')
-		? decode_json ($response->content)
-		: { raw => $response->content };
+	my $decoded = eval { decode_json ($response->content) }
+		if $response->header ('Content-Type') eq 'application/json';
+	$decoded = { raw => $response->content } unless $decoded;
 
 	# Error handling
 	unless ($response->is_success) {

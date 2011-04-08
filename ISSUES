@@ -44,7 +44,8 @@ And same contant as GET of the resource.
 
 They should have 204 return code and no Content-Type header.
 
-* DELETE /gdc/projects/<project_id> returns ""
+* DELETE /gdc/projects/<project_id> returns: ""
+* DELETE https://secure.gooddata.com/gdc/account/login/<id> returns: 2
 
 It should be empty.
 
