@@ -81,6 +81,7 @@ $command = shift if @ARGV;
 
 my %actions = (
 	login => \&login,
+	logout => \&logout,
 	lsprojects => \&lsprojects,
 	rmproject => \&rmproject,
 	mkproject => \&mkproject,
@@ -164,6 +165,18 @@ sub login
 	}
 
 	$gdc->login ($user, $password);
+}
+
+=head2 logout
+
+Drop credentials if user is logged in, otherwise do nothing.
+Automatically done upon utility exit.
+
+=cut
+
+sub logout
+{
+	$gdc->logout;
 }
 
 =head2 project [uri]

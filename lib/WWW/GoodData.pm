@@ -195,6 +195,29 @@ sub login
 			remember => 0}});
 }
 
+=item B<logout>
+
+Make server invalidate the client session and drop
+credential tokens.
+
+Is called upon destruction of the GoodData client instance.
+
+=cut
+
+sub logout
+{
+	my $self = shift;
+
+	die 'Not logged in' unless defined $self->{login};
+
+	# The redirect magic does not work for POSTs and we can't really
+	# handle 401s until the API provides reason for them...
+	$self->{agent}->get ($self->get_uri ('token'));
+
+	$self->{agent}->delete ($self->{login}{userLogin}{state});
+	$self->{login} = undef;
+}
+
 =item B<projects>
 
 Return array of links to project resources on metadata server.
@@ -273,6 +296,17 @@ sub reports
 		qw/metadata query reports/, {});
 }
 
+=item B<DESTROY>
+
+Log out the session with B<logout> unless not logged in.
+
+=cut
+
+sub DESTROY
+{
+	my $self = shift;
+	$self->logout if $self->{login};
+}
 
 =back
 
