@@ -58,3 +58,9 @@ message is gotten.
 Returns: "/gdc/exporter/chart_result/<...>/<...>".
 Should be: { uri => "/gdc/exporter/chart_result/<...>/<...>" }.
 
+* Report without reportdefinitions was seen in real life
+
+URI: /gdc/md/i729zexwpdr03c4hjf1vktrlwa5m590q/obj/7610
+When POSTed to xtab2 executor3: 500 Internal Server Error
+Missing ReportID in Storage.pm-&gt;Register() at /opt/common/lib/XTabLib/Storage.pm line 191.
+

@@ -297,6 +297,24 @@ sub reports
 		qw/metadata query reports/, {});
 }
 
+=item B<compute_report> REPORT
+
+Trigger a report computation and return the URI of the result resource.
+
+=cut
+
+sub compute_report
+{
+	my $self = shift;
+	my $report = shift;
+
+	return $self->{agent}->post (
+		$self->get_uri (qw/xtab xtab-executor3/),
+		{ report_req => { report => $report }}
+	)->{reportResult2}{meta}{uri};
+}
+
+=item B<export_report> REPORT FORMAT
 =item B<DESTROY>
 
 Log out the session with B<logout> unless not logged in.
