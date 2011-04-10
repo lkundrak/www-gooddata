@@ -53,6 +53,11 @@ It should be empty.
 
 When requesting authenticated resource without SST, only "/gdc/account/login"
 message is gotten.
+
+* HTML template at /gdc/exporter/executor lacks some formats
+
+Offers PDF/XLS only (no PNG).
+
 * POST to exporter resource returns invalid JSON
 
 Returns: "/gdc/exporter/chart_result/<...>/<...>".
@@ -64,3 +69,28 @@ URI: /gdc/md/i729zexwpdr03c4hjf1vktrlwa5m590q/obj/7610
 When POSTed to xtab2 executor3: 500 Internal Server Error
 Missing ReportID in Storage.pm-&gt;Register() at /opt/common/lib/XTabLib/Storage.pm line 191.
 
+* Inconsitency in "self" links
+
+{report}{meta}{uri}
+{project}{meta}{self}
+
+* Exported document returns 202 with invalid body until exported
+
+"null" with application/json content-type.
+According to RFC 2616, body SHOULD be present and indicate status.
+
+* Crappy diagnostics from chart exporter
+
+Exporter worker returned ERROR status at lib/WWW/GoodData/Agent.pm line 146.
+This happened once without a good reason and retry succeeded.
+
+* Invalid structure errors are really hard to grok
+
+Checking 'result_req', result STRUCTURE INVALID - name of structure:'ResultReq'(tag:result_req),  /result_req/ExecuteResult/format: Object  does not match any alternative. Alternatives tried : [STRUCTURE INVALID - name of structure:'ResultReq'(tag:result_req),  /result_req/ExecuteResult/format/case:: Constant 'pdf' expected. at /opt/common/lib/REST/GrammarStructure/Atom.pm line 67.
+, STRUCTURE INVALID - name of structure:'ResultReq'(tag:result_req),  /result_req/ExecuteResult/format/case:: Constant 'xls' expected. at /opt/common/lib/REST/GrammarStructure/Atom.pm line 67.
+, STRUCTURE INVALID - name of structure:'ResultReq'(tag:result_req),  /result_req/ExecuteResult/format/case:: Constant 'png' expected. at /opt/common/lib/REST/GrammarStructure/Atom.pm line 67.
+] at /opt/common/lib/REST/GrammarStructure/Alternative.pm line 116.
+
+* Chart PDF exports have weird title
+
+One from result used should be there instead.
