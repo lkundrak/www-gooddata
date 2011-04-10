@@ -133,6 +133,7 @@ sub get_links
 	# Fully resolved
 	return @matches unless @path;
 
+	die 'Nonexistent component in path' unless @matches;
 	die 'Ambigious path' unless scalar @matches == 1;
 	my $new_root = new URI ($matches[0]->{link});
 	$new_root = $new_root->abs ($root);
