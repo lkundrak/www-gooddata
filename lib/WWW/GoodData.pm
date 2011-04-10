@@ -65,7 +65,7 @@ our %links;
 sub get_links
 {
 	my $self = shift;
-	my $root = ref $_[0] ? shift : $root;
+	my $root = (ref $_[0] and ref $_[0] ne 'HASH') ? shift : $root;
 	my @path = map { ref $_ ? $_ : { category => $_ } } @_;
 	my $link = shift @path;
 
