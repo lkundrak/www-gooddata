@@ -250,7 +250,7 @@ sub lsprojects
 	}
 }
 
-=head2 rmproject [uri]
+=head2 rmproject
 
 Delete a project.
 
@@ -271,7 +271,6 @@ sub rmproject
 	GetOptionsFromArray (\@_,
 		'P|project=s' => \$project,
 	) or die 'Bad arguments to rmproject';
-	$project = shift if @_;
 	die 'Extra arguments' if @_;
 	die 'No project name given' unless $project;
 
@@ -313,7 +312,7 @@ sub mkproject
 	$project = $gdc->create_project ($title, $summary);
 }
 
-=head2 lsreports [project]
+=head2 lsreports
 
 Print a list of reports in a project.
 
@@ -341,7 +340,6 @@ sub lsreports
 		'v|long' => \$long,
 		'P|project' => \$project,
 	) or die 'Bad arguments to lsprojects';
-	$project = shift if @_;
 	die 'Extra arguments' if @_;
 	die 'No project URI given' unless $project;
 
