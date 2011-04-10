@@ -315,6 +315,42 @@ sub compute_report
 }
 
 =item B<export_report> REPORT FORMAT
+
+Submit an exporter task for a computed report (see B<compute_report>),
+wait for completion and return raw data in desired format.
+
+=cut
+
+sub export_report
+{
+	my $self = shift;
+	my $report = shift;
+	my $format = shift;
+
+	# Compute the report
+	my $result = $self->{agent}->post (
+		$self->get_uri (qw/report-exporter exporter-executor/),
+		{ result_req => { format => $format,
+			report => $self->compute_report ($report) }}
+	);
+
+	# Trigger the export
+	my $exported;
+	do {
+		$exported = $self->{agent}->get ($result);
+		sleep 1;
+	} while ($exported->{raw} eq 'null');
+
+	# Gotten the correctly coded result?
+	return $exported->{raw} if $exported->{type} eq {
+		png => 'image/png',
+		pdf => 'application/pdf',
+		xls => 'application/vnd.ms-excel',
+	}->{$format};
+
+	die 'Wrong type of content returned';
+}
+
 =item B<DESTROY>
 
 Log out the session with B<logout> unless not logged in.

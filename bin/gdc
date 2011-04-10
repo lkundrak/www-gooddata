@@ -87,6 +87,7 @@ my %actions = (
 	mkproject => \&mkproject,
 	project => \&project,
 	lsreports => \&lsreports,
+	export => \&export,
 	help => \&help,
 	shell => \&shell,
 );
@@ -356,6 +357,67 @@ sub lsreports
 			print $report->{title}."\n";
 		}
 	}
+}
+
+=head2 export
+
+Export a report computation result into file.
+
+=over 4
+
+=item B<-P>, B<--project>
+
+Set or override the project to act on.
+See global B<--project> option for the detailed description.
+
+=item B<-r>, B<--report>
+
+Set report URI (see B<lsreports>).
+
+=item B<-f>, B<--file>
+
+File to place the result into.
+
+=item B<-F>, B<--format>
+
+One of B<pdf>, B<xls>, B<png> (latter only valid for chart reports),
+Can be unspecified if file name ends with a dot and format name
+(extension).
+
+=back
+
+=cut
+
+sub export
+{
+	my $long;
+	my $project = $project;
+	my $report;
+	my $file;
+	my $format;
+
+	GetOptionsFromArray (\@_,
+		'v|long' => \$long,
+		'P|project' => \$project,
+		'r|report' => \$report,
+		'f|file' => \$file,
+		'F|format' => \$format,
+	) or die 'Bad arguments to export';
+	$report = shift if @_;
+	$file = shift if @_;
+	$file =~ /\.([^\.]+)$/ and $format = $1
+		if $file and not $format;
+	$format = shift if @_;
+	die 'Extra arguments' if @_;
+	die 'No project URI given' unless $project;
+	die 'No report URI given' unless $report;
+	die 'No output file given' unless $file;
+	die 'No output format given' unless $format;
+
+	my $document = $gdc->export_report ($report, $format);
+	open (my $dump, '>', $file) or die $!;
+	print $dump $document;
+	close ($dump) or die $!;
 }
 
 =head2 help
