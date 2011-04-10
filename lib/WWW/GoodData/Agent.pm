@@ -129,7 +129,7 @@ sub request
 	return $response if ref $response eq 'HASH';
 
 	# Decode
-	my $decoded = eval { decode_json ($response->content) }
+	my $decoded = eval { new JSON::XS->allow_nonref->decode ($response->content) }
 		if $response->header ('Content-Type') eq 'application/json';
 	$decoded = { raw => $response->content } unless $decoded;
 

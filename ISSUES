@@ -53,3 +53,8 @@ It should be empty.
 
 When requesting authenticated resource without SST, only "/gdc/account/login"
 message is gotten.
+* POST to exporter resource returns invalid JSON
+
+Returns: "/gdc/exporter/chart_result/<...>/<...>".
+Should be: { uri => "/gdc/exporter/chart_result/<...>/<...>" }.
+
