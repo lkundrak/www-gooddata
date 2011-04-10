@@ -131,7 +131,10 @@ sub request
 	# Decode
 	my $decoded = eval { new JSON::XS->allow_nonref->decode ($response->content) }
 		if $response->header ('Content-Type') eq 'application/json';
-	$decoded = { raw => $response->content } unless $decoded;
+	$decoded = {
+		type => $response->header ('Content-Type'),
+		raw => $response->content,
+	} unless $decoded;
 
 	# Error handling
 	unless ($response->is_success) {
