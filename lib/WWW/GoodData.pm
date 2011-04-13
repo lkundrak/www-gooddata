@@ -343,11 +343,10 @@ sub export_report
 	);
 
 	# Trigger the export
-	my $exported;
-	do {
-		$exported = $self->{agent}->get ($result);
-		sleep 1;
-	} while ($exported->{raw} eq 'null');
+	my $exported = $self->poll (
+		sub { $self->{agent}->get ($result) },
+		sub { shift->{raw} ne 'null' }
+	) or die 'Timed out';
 
 	# Gotten the correctly coded result?
 	return $exported->{raw} if $exported->{type} eq {
