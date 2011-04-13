@@ -46,6 +46,13 @@ blessed, otherwise a new one is created. Possible properties include:
 
 A L<WWW::GoodData::Agent> instance to use.
 
+=item B<retries>
+
+A number of retries to obtain results of asynchronous tasks, such as
+report exports or data uploads. See B<poll>.
+
+Defaults to 3600 (delay of one hour).
+
 =back
 
 =cut
@@ -56,6 +63,7 @@ sub new
 	my $self = shift || {};
 	bless $self, $class;
 	$self->{agent} ||= new WWW::GoodData::Agent ($root);
+	$self->{retries} ||= 3600;
 	$self->{agent}->{error_callback} = \&error_callback;
 	return $self;
 }
@@ -349,6 +357,32 @@ sub export_report
 	}->{$format};
 
 	die 'Wrong type of content returned';
+
+=item B<poll> BODY CONDITION
+
+Should only be used internally.
+
+Run BODY passing its return value to call to CONDITION until it
+evaluates to true or B<retries> (see properties) times out.
+
+Returns value is of last iteration of BODY in case
+CONDITION succeeds, otherwise undefined (in case of timeout).
+
+=cut
+
+sub poll
+{
+        my $self = shift;
+        my ($body, $cond) = @_;
+        my $retries = $self->{retries};
+
+        while ($retries--) {
+                my $ret = $body->();
+                return $ret if $cond->($ret);
+                sleep 1;
+        }
+
+        return undef;
 }
 
 =item B<DESTROY>
