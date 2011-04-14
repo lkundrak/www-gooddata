@@ -94,3 +94,14 @@ Checking 'result_req', result STRUCTURE INVALID - name of structure:'ResultReq'(
 * Chart PDF exports have weird title
 
 One from result used should be there instead.
+
+* GET https://secure.gooddata.com/gdc/md/f7x4zbvn2sq31impugc54uqw0x34gs92/drillpaths
+
+Returned 500 Internal Server Error
+Missing address of excutor resource! at /opt/common/lib/GDCRPC.pm line 33.
+
+Is the resource still in use? Is GET method valid?
+
+* Nearly all 405 responses lack Allow headers
+
+Plain violation of 2616.
