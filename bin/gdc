@@ -111,7 +111,7 @@ sub shell
 		return unless defined $line;
 		$readline->addhistory ($line) if $line;
 		my ($command, @args) = shellwords ($line);
-		next unless $command;
+		next unless defined $command;
 		if (exists $actions{$command}) {
 			eval { $actions{$command}->(@args) };
 			warn $@ if $@;
@@ -155,7 +155,7 @@ sub login
 	$user = shift if @_;
 	$password = shift if @_;
 	die 'Extra arguments' if @_;
-	die 'No user name given' unless $user;
+	die 'No user name given' unless defined $user;
 
 	# stty might not be portable to NT and such
 	if (not defined $password and -t STDIN) {
@@ -275,7 +275,7 @@ sub rmproject
 	) or die 'Bad arguments to rmproject';
 	$project = shift if @_;
 	die 'Extra arguments' if @_;
-	die 'No project name given' unless $project;
+	die 'No project name given' unless defined $project;
 
 	$gdc->delete_project ($project);
 }
@@ -310,7 +310,7 @@ sub mkproject
 	$title = shift if @_;
 	$summary = shift if @_;
 	die 'Extra arguments' if @_;
-	die 'No project title given' unless $title;
+	die 'No project title given' unless defined $title;
 
 	$project = $gdc->create_project ($title, $summary);
 }
@@ -344,7 +344,7 @@ sub lsreports
 		'P|project=s' => \$project,
 	) or die 'Bad arguments to lsprojects';
 	die 'Extra arguments' if @_;
-	die 'No project URI given' unless $project;
+	die 'No project URI given' unless defined $project;
 
 	foreach my $report ($gdc->reports ($project)) {
 		if ($long) {
@@ -408,10 +408,10 @@ sub export
 		if $file and not $format;
 	$format = shift if @_;
 	die 'Extra arguments' if @_;
-	die 'No project URI given' unless $project;
-	die 'No report URI given' unless $report;
-	die 'No output file given' unless $file;
-	die 'No output format given' unless $format;
+	die 'No project URI given' unless defined $project;
+	die 'No report URI given' unless defined $report;
+	die 'No output file given' unless defined $file;
+	die 'No output format given' unless defined $format;
 
 	my $document = $gdc->export_report ($report, $format);
 	open (my $dump, '>', $file) or die $!;
@@ -450,8 +450,8 @@ sub model
 	) or die 'Bad arguments to model';
 	$file = shift if @_;
 	die 'Extra arguments' if @_;
-	die 'No project URI given' unless $project;
-	die 'No output file given' unless $file;
+	die 'No project URI given' unless defined $project;
+	die 'No output file given' unless defined $file;
 
 	my $document = $gdc->ldm_picture ($project);
 	open (my $dump, '>', $file) or die $!;
@@ -495,7 +495,7 @@ sub chmodel
 	) or die 'Bad arguments to model';
 	$maql = shift if @_;
 	die 'Extra arguments' if @_;
-	die 'No project URI given' unless $project;
+	die 'No project URI given' unless defined $project;
 	if ($file) {
 		open (my $script, '<', $file) or die $!;
 		$maql = join '', <$script>;
