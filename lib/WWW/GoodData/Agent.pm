@@ -140,8 +140,11 @@ sub request
 	unless ($response->is_success) {
 		# Apache::Error exceptions lack error wrapper
 		$decoded = $decoded->{error} if exists $decoded->{error};
-		die $response->status_line unless exists $decoded->{message};
-		die sprintf $decoded->{message}, @{$decoded->{parameters}};
+		my $request_id = $response->header ('X-GDC-Request') || "";
+		$request_id =~ s/:.*//;
+		$request_id = " (Request ID: $request_id)" if $request_id;
+		die $response->status_line.$request_id unless exists $decoded->{message};
+		die sprintf ($decoded->{message}, @{$decoded->{parameters}}).$request_id;
 	}
 
 	return $decoded;

@@ -114,3 +114,8 @@ Such as empty UpdateMaql from GoodData-CL.
 
 Renders MAQL "#\n" invalid:
 Detected invalid maql statement(s): got ';' at {"line":2,"column":1}, but ['' | 'IDENTIFIER' | 'SYNCHRONIZE' | 'DROP' | 'DEFINE' | 'OBJECT' | 'ALTER' | 'INCLUDE' | 'CREATE' | 'SELECT'] is expected. at lib/WWW/GoodData/Agent.pm line 144.
+
+* Request IDs
+
+'x-gdc-request' => 'Mh64TsXmLRosHqPp:e8pbcbvdsxcji7n2'
+I probably should not get the subrequest id (following the colon).
