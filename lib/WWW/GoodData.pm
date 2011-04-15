@@ -358,6 +358,25 @@ sub export_report
 	die 'Wrong type of content returned';
 }
 
+=item B<ldm_picture> PROJECT
+
+Return picture of Logical Data Model (LDM) in PNG format.
+
+=cut
+
+sub ldm_picture
+{
+	my $self = shift;
+	my $project = shift;
+
+	my $model = $self->{agent}->get ($self->{agent}->get (
+		$self->get_uri (new URI ($project),
+			{ category => 'ldm' }))->{uri});
+	die 'Expected PNG image' unless $model->{type} eq 'image/png';
+
+	return $model->{raw};
+}
+
 =item B<poll> BODY CONDITION
 
 Should only be used internally.

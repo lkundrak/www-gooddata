@@ -88,6 +88,7 @@ my %actions = (
 	project => \&project,
 	lsreports => \&lsreports,
 	export => \&export,
+	model => \&model,
 	help => \&help,
 	shell => \&shell,
 );
@@ -411,6 +412,46 @@ sub export
 	die 'No output format given' unless $format;
 
 	my $document = $gdc->export_report ($report, $format);
+	open (my $dump, '>', $file) or die $!;
+	print $dump $document;
+	close ($dump) or die $!;
+}
+
+=head2 model
+
+Export a Logical Data Model (LDM) picture in PNG format into file.
+
+=over 4
+
+=item B<-P>, B<--project>
+
+Set or override the project to act on.
+See global B<--project> option for the detailed description.
+
+=item B<-f>, B<--file>
+
+File to place the result into.
+
+=back
+
+=cut
+
+sub model
+{
+	my $long;
+	my $project = $project;
+	my $file;
+
+	GetOptionsFromArray (\@_,
+		'P|project' => \$project,
+		'f|file' => \$file,
+	) or die 'Bad arguments to model';
+	$file = shift if @_;
+	die 'Extra arguments' if @_;
+	die 'No project URI given' unless $project;
+	die 'No output file given' unless $file;
+
+	my $document = $gdc->ldm_picture ($project);
 	open (my $dump, '>', $file) or die $!;
 	print $dump $document;
 	close ($dump) or die $!;
