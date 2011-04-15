@@ -211,7 +211,7 @@ sub project
 	if ($this_project) {
 		$project = $this_project;
 	} else {
-		print "$project\n";
+		print $project ? "$project\n" : "No project selected.\n";
 	}
 }
 
