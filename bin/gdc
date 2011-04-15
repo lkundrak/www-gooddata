@@ -273,6 +273,7 @@ sub rmproject
 	GetOptionsFromArray (\@_,
 		'P|project=s' => \$project,
 	) or die 'Bad arguments to rmproject';
+	$project = shift if @_;
 	die 'Extra arguments' if @_;
 	die 'No project name given' unless $project;
 
