@@ -89,6 +89,7 @@ my %actions = (
 	lsreports => \&lsreports,
 	export => \&export,
 	model => \&model,
+	chmodel => \&chmodel,
 	help => \&help,
 	shell => \&shell,
 );
@@ -457,6 +458,52 @@ sub model
 	close ($dump) or die $!;
 }
 
+=head2 chmodel
+
+Change a Logical Data Model (LDM) with MAQL DDL script.
+
+The MAQL script can be either specified inline as argument
+to B<chmodel>, or read from file specified with B<--file>
+option (see below).
+
+=over 4
+
+=item B<-P>, B<--project>
+
+Set or override the project to act on.
+See global B<--project> option for the detailed description.
+
+=item B<-f>, B<--file>
+
+Read MAQL script from specified file.
+
+=back
+
+=cut
+
+sub chmodel
+{
+	my $long;
+	my $project = $project;
+	my $maql;
+	my $file;
+
+	GetOptionsFromArray (\@_,
+		'P|project' => \$project,
+		'f|file=s' => \$file,
+	) or die 'Bad arguments to model';
+	$maql = shift if @_;
+	die 'Extra arguments' if @_;
+	die 'No project URI given' unless $project;
+	if ($file) {
+		open (my $script, '<', $file) or die $!;
+		$maql = join '', <$script>;
+		close ($script) or die $!;
+	}
+	die 'No MAQL script given' unless defined $maql;
+	$gdc->ldm_manage ($project, $maql);
+}
+
 =head2 help
 
 Print list of available commands.
@@ -485,6 +532,7 @@ $actions{$command}->(@ARGV);
 =item *
 
 L<https://secure.gooddata.com/gdc/> -- Browsable GoodData API
+L<http://developer.gooddata.com/api/maql-ddl.html> -- MAQL DDL language documentation
 
 =item *
 

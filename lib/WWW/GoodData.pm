@@ -377,6 +377,23 @@ sub ldm_picture
 	return $model->{raw};
 }
 
+=item B<ldm_manage> PROJECT MAQL
+
+Execute MAQL statement for a project.
+
+=cut
+
+sub ldm_manage
+{
+	my $self = shift;
+	my $project = shift;
+	my $maql = shift;
+
+	$self->{agent}->post (
+		$self->get_uri (new URI ($project), qw/metadata ldm ldm-manage/),
+		{ manage => { maql => $maql }});
+}
+
 =item B<poll> BODY CONDITION
 
 Should only be used internally.
