@@ -389,6 +389,9 @@ sub ldm_manage
 	my $project = shift;
 	my $maql = shift;
 
+	$maql = "# WWW::GoodData MAQL execution\n$maql";
+	chomp $maql;
+
 	$self->{agent}->post (
 		$self->get_uri (new URI ($project), qw/metadata ldm ldm-manage/),
 		{ manage => { maql => $maql }});
