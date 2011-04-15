@@ -356,6 +356,7 @@ sub export_report
 	}->{$format};
 
 	die 'Wrong type of content returned';
+}
 
 =item B<poll> BODY CONDITION
 
