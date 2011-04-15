@@ -189,7 +189,7 @@ B<rmproject>.
 
 =over 4
 
-=item B<-p>, B<--project>
+=item B<-P>, B<--project>
 
 Project URI.
 No checking is done with the project URI.
@@ -202,7 +202,7 @@ sub project
 {
 	my $this_project;
 	GetOptionsFromArray (\@_,
-		'p|project' => \$this_project,
+		'P|project=s' => \$this_project,
 	) or die 'Bad arguments to lsprojects';
 	$this_project = shift if @_;
 	die 'Extra arguments' if @_;
@@ -339,7 +339,7 @@ sub lsreports
 
 	GetOptionsFromArray (\@_,
 		'v|long' => \$long,
-		'P|project' => \$project,
+		'P|project=s' => \$project,
 	) or die 'Bad arguments to lsprojects';
 	die 'Extra arguments' if @_;
 	die 'No project URI given' unless $project;
@@ -397,8 +397,8 @@ sub export
 	GetOptionsFromArray (\@_,
 		'P|project' => \$project,
 		'r|report' => \$report,
-		'f|file' => \$file,
-		'F|format' => \$format,
+		'f|file=s' => \$file,
+		'F|format=s' => \$format,
 	) or die 'Bad arguments to export';
 	$report = shift if @_;
 	$file = shift if @_;
@@ -443,8 +443,8 @@ sub model
 	my $file;
 
 	GetOptionsFromArray (\@_,
-		'P|project' => \$project,
-		'f|file' => \$file,
+		'P|project=s' => \$project,
+		'f|file=s' => \$file,
 	) or die 'Bad arguments to model';
 	$file = shift if @_;
 	die 'Extra arguments' if @_;
