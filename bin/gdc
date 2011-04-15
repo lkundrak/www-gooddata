@@ -388,14 +388,12 @@ Can be unspecified if file name ends with a dot and format name
 
 sub export
 {
-	my $long;
 	my $project = $project;
 	my $report;
 	my $file;
 	my $format;
 
 	GetOptionsFromArray (\@_,
-		'v|long' => \$long,
 		'P|project' => \$project,
 		'r|report' => \$report,
 		'f|file' => \$file,
