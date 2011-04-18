@@ -5,4 +5,5 @@ Build.PL			Build script
 MANIFEST			This list of files
 META.yml			Distribution Metadata
 t/pod.t				POD test
+t/require.t			Compilation test
 ISSUES				API issues
