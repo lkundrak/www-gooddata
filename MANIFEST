@@ -4,4 +4,5 @@ lib/WWW/GoodData/Agent.pm	HTTP client for GoodData JSON-based API
 Build.PL			Build script
 MANIFEST			This list of files
 META.yml			Distribution Metadata
+t/pod.t				POD test
 ISSUES				API issues

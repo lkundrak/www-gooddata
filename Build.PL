@@ -20,7 +20,9 @@ my $build = Module::Build->new(
 		'Text::ParseWords' => 0,
 		'IO::Socket::SSL' => 0,
 	},
-	build_requires => {}
+	build_requires => {
+		'Test::Pod' => 0,
+	},
 );
 
 $build->create_build_script;
