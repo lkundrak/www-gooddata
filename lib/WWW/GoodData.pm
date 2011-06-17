@@ -128,6 +128,15 @@ sub get_links
 		}
 	}
 
+	# Uploads are on different server, but the link is incorrect
+	foreach (@{$links{$root}}) {
+		$_->{link} eq '/uploads' or next;
+		my $diroot = new URI ($_->{link}, $root->scheme)->abs ($root);
+		$diroot->host =~ /([^\.]*)(.*)/
+			and $diroot->host ("$1-di$2");
+		$_->{link} = "$diroot";
+	};
+
 	my @matches = grep {
 		my $this_link = $_;
 		# Filter out those, who lack any of our keys or
