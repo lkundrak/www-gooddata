@@ -369,7 +369,7 @@ sub export_report
 	my $exported = $self->poll (
 		sub { $self->{agent}->get ($result) },
 		sub { shift->{raw} ne 'null' }
-	) or die 'Timed out';
+	) or die 'Timed out waiting for report to export';
 
 	# Gotten the correctly coded result?
 	return $exported->{raw} if $exported->{type} eq {
