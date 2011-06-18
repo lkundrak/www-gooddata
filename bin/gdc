@@ -90,6 +90,7 @@ my %actions = (
 	export => \&export,
 	model => \&model,
 	chmodel => \&chmodel,
+	upload => \&upload,
 	help => \&help,
 	shell => \&shell,
 );
@@ -503,6 +504,42 @@ sub chmodel
 	}
 	die 'No MAQL script given' unless defined $maql;
 	$gdc->ldm_manage ($project, $maql);
+}
+
+=head2 upload
+
+Update data set with new data.
+
+=over 4
+
+=item B<-P>, B<--project>
+
+Set or override the project to act on.
+See global B<--project> option for the detailed description.
+
+=item B<-f>, B<--file>
+
+SLI Manifest of the upload.
+
+=back
+
+=cut
+
+sub upload
+{
+	my $long;
+	my $project = $project;
+	my $file;
+
+	GetOptionsFromArray (\@_,
+		'P|project' => \$project,
+		'f|file=s' => \$file,
+	) or die 'Bad arguments to model';
+	$file = shift if @_;
+	die 'Extra arguments' if @_;
+	die 'No project URI given' unless defined $project;
+	die 'No SLI manifest given' unless defined $file;
+	$gdc->upload ($project, $file)
 }
 
 =head2 help

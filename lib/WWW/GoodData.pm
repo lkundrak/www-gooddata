@@ -25,6 +25,7 @@ use strict;
 use warnings;
 
 use WWW::GoodData::Agent;
+use JSON::XS;
 use URI;
 
 our $root = new URI ('https://secure.gooddata.com/gdc');
@@ -419,6 +420,54 @@ sub ldm_manage
 		{ manage => { maql => $maql }});
 }
 
+=item B<upload> PROJECT MANIFEST
+
+Upload and integrate a new data load via Single Loading Interface (SLI).
+
+=cut
+
+sub upload
+{
+	my $self = shift;
+	my $project = shift;
+	my $file = shift;
+
+	# Parse the manifest
+	my $upload_info = decode_json (slurp_file ($file));
+
+	my $uploads = new URI ($self->get_uri ('uploads'));
+
+	# Upload the manifest
+	my $manifest = $uploads->clone;
+	$manifest->path_segments ($manifest->path_segments, 'upload_info.json');
+	$self->{agent}->request (new HTTP::Request (PUT => $manifest,
+		['Content-Type' => 'application/json'], encode_json ($upload_info)));
+
+	# Upload CSV
+	my $csv = $uploads->clone;
+	$csv->path_segments ($csv->path_segments, $upload_info->{dataSetSLIManifest}{file});
+	$self->{agent}->request (new HTTP::Request (PUT => $csv,
+		['Content-Type' => 'application/csv'],
+		(slurp_file ($upload_info->{dataSetSLIManifest}{file})
+			|| die 'No CSV file specified in SLI manifest')));
+
+	# Trigger the integration
+	my $task = $self->{agent}->post (
+		$self->get_uri (new URI ($project),
+			{ category => 'self', type => 'project' }, # Validate it's a project
+			qw/metadata etl pull/),
+		{ pullIntegration => '/' }
+	)->{pullTask}{uri};
+
+	# Wait for the task to enter a stable state
+	my $result = $self->poll (
+		sub { $self->{agent}->get ($task) },
+		sub { shift->{taskStatus} !~ /^(RUNNING|PREPARED)$/ }
+	) or die 'Timed out waiting for integration to finish';
+
+	return $result->{taskStatus} ne 'ERROR';
+}
+
 =item B<poll> BODY CONDITION
 
 Should only be used internally.
@@ -456,6 +505,13 @@ sub DESTROY
 {
 	my $self = shift;
 	$self->logout if $self->{login};
+}
+
+sub slurp_file
+{
+        my $file = shift;
+        open (my $fh, '<', $file) or die "$file: $!";
+        return join '', <$fh>;
 }
 
 =back
