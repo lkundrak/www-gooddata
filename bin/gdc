@@ -521,7 +521,7 @@ sub help
 		map { "\t$_" } keys %actions ;
 }
 
-$gdc->login ($user, $password) if defined $user;
+login ($user, $password ? "$password" : undef) if defined $user;
 pod2usage ("No such command exists: '$command'")
 	unless exists $actions{$command};
 $actions{$command}->(@ARGV);
