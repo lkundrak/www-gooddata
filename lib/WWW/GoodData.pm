@@ -206,6 +206,12 @@ sub login
 	my $self = shift;
 	my ($login, $password) = @_;
 
+	my $netloc = $root->host.':'.$root->port;
+	# Neither on the same address, not navigatable
+	$netloc =~ s/([^\.]*)/$1-di/;
+	$self->{agent}->credentials ($netloc,
+		'GoodData project data staging area', $login => $password);
+
 	$self->{login} = $self->{agent}->post ($self->get_uri ('login'),
 		{postUserLogin => {
 			login => $login,
@@ -227,6 +233,13 @@ sub logout
 	my $self = shift;
 
 	die 'Not logged in' unless defined $self->{login};
+
+	# Forget Basic authentication
+	my $netloc = $root->host.':'.$root->port;
+	# Neither on the same address, not navigatable
+	$netloc =~ s/([^\.])/$1-di/;
+	$self->{agent}->credentials ($netloc,
+		'GoodData project data staging area', undef, undef);
 
 	# The redirect magic does not work for POSTs and we can't really
 	# handle 401s until the API provides reason for them...
