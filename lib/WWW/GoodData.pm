@@ -434,8 +434,14 @@ sub upload
 
 	# Parse the manifest
 	my $upload_info = decode_json (slurp_file ($file));
+	die "$file: not a SLI manifest"
+		unless $upload_info->{dataSetSLIManifest};
 
+	# Construct unique URI in staging area to upload to
 	my $uploads = new URI ($self->get_uri ('uploads'));
+	$uploads->path_segments ($uploads->path_segments,
+		$upload_info->{dataSetSLIManifest}{dataSet}.'-'.time);
+	$self->{agent}->request (new HTTP::Request (MKCOL => $uploads));
 
 	# Upload the manifest
 	my $manifest = $uploads->clone;
@@ -456,7 +462,7 @@ sub upload
 		$self->get_uri (new URI ($project),
 			{ category => 'self', type => 'project' }, # Validate it's a project
 			qw/metadata etl pull/),
-		{ pullIntegration => '/' }
+		{ pullIntegration => [$uploads->path_segments]->[-1] }
 	)->{pullTask}{uri};
 
 	# Wait for the task to enter a stable state
