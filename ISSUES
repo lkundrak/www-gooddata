@@ -123,3 +123,7 @@ I probably should not get the subrequest id (following the colon).
 * No way to navigate to secure-di
 
 Should follow a link.
+
+* https://secure-di.gooddata.com/gdc/uploads/nonexistent
+
+Returns same as https://secure-di.gooddata.com/gdc/uploads instead of 404
