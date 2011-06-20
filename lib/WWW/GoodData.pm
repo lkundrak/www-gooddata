@@ -471,7 +471,9 @@ sub upload
 		sub { shift->{taskStatus} !~ /^(RUNNING|PREPARED)$/ }
 	) or die 'Timed out waiting for integration to finish';
 
-	return $result->{taskStatus} ne 'ERROR';
+	return if $result->{taskStatus} eq 'OK';
+	warn 'Upload finished with warnings' if $result->{taskStatus} eq 'WARNING';
+	die 'Upload finished with '.$result->{taskStatus}.' status';
 }
 
 =item B<poll> BODY CONDITION
