@@ -570,6 +570,9 @@ $actions{$command}->(@ARGV);
 =item *
 
 L<https://secure.gooddata.com/gdc/> -- Browsable GoodData API
+
+=item *
+
 L<http://developer.gooddata.com/api/maql-ddl.html> -- MAQL DDL language documentation
 
 =item *
