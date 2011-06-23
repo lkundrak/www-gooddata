@@ -163,7 +163,7 @@ sub login
 		system 'stty -echo'
 			and die 'Can not ask for password securely';
 		print 'Password: ';
-		chomp ($password = <>);
+		chomp ($password = <STDIN>);
 		print "\n";
 		system 'stty echo';
 	}
