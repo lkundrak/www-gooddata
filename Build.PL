@@ -20,6 +20,7 @@ my $build = Module::Build->new(
 		'Pod::Usage' => 0,
 		'Text::ParseWords' => 0,
 		'IO::Socket::SSL' => 0,
+		'LWP::UserAgent' => 0,
 	},
 	build_requires => {
 		'Test::Pod' => 0,
