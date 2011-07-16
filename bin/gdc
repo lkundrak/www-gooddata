@@ -16,6 +16,7 @@ service API built on top of L<WWW::GoodData> client library.
 =cut
 
 use WWW::GoodData;
+use WWW::GoodData::Agent;
 use Getopt::Long qw/GetOptionsFromArray/;
 use Pod::Usage;
 use Text::ParseWords;
@@ -30,6 +31,7 @@ my $command = 'shell';
 my $user;
 my $password;
 my $project;
+my $root;
 
 =head1 OPTIONS
 
@@ -62,6 +64,11 @@ and B<mkproject> commands).
 No checking is done with the project URI util a command that
 acts upon the project is issued.
 
+=item B<-r>, B<--root>
+
+URL of the service API root.
+Defaults to L<https://secure.gooddata.com/gdc/>.
+
 =back
 
 =cut
@@ -72,6 +79,8 @@ new Getopt::Long::Parser (
 	'u|user=s' => \$user,
 	'p|password=s' => \$password,
 	'P|project=s' => \$project,
+	'r|root=s' => sub { $gdc->{agent} =
+		new WWW::GoodData::Agent ($_[1]) },
 ) or pod2usage (2);
 $command = shift if @ARGV;
 

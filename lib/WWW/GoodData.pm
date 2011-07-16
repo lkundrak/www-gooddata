@@ -74,7 +74,8 @@ our %links;
 sub get_links
 {
 	my $self = shift;
-	my $root = (ref $_[0] and ref $_[0] ne 'HASH') ? shift : $root;
+
+	my $root = (ref $_[0] and ref $_[0] ne 'HASH') ? shift : new URI ($self->{agent}{root});
 	my @path = map { ref $_ ? $_ : { category => $_ } } @_;
 	my $link = shift @path;
 
@@ -207,9 +208,12 @@ sub login
 	my $self = shift;
 	my ($login, $password) = @_;
 
+	# We should really get a link here instead of mangling
+	# service root location...
+	my $root = new URI ($self->{agent}{root});
 	my $netloc = $root->host.':'.$root->port;
-	# Neither on the same address, not navigatable
 	$netloc =~ s/([^\.]*)/$1-di/;
+
 	$self->{agent}->credentials ($netloc,
 		'GoodData project data staging area', $login => $password);
 
