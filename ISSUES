@@ -21,16 +21,6 @@ lack the error key:
 '{"parameters":[],"component":"Account::Login::AuthShare",
         "message":"Bad Login or Password\\"!"}',
 
-* 401 responses don't tell us how to authenticate
-
-Missing an WWW-Authenticate header is a violation of RFC 2616.
-Values like 'GoodData cookie=GDCAuthTT' or
-'GoodData login=/gdc/account/login' might be more helpful.
-
-For now, we can tell that we need to refresh the token only by following
-a redirect that's sent only to browsers (we pretend to be one by accepting
-application/xhtml+xml).
-
 * No charset information
 
 Content-Encoding header is not present, nor is MIME type in Content-Type

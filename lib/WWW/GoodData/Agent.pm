@@ -65,9 +65,8 @@ sub new
 	# Not backed by a file yet
 	$self->cookie_jar ({});
 	# Prefer JSON, but deal with whatever else comes in, instead of letting backend return 406s
-	# XML is to make Backend think we're a browser, and redirect us upon token expirations
 	$self->default_header (Accept =>
-		'application/json;q=0.9, text/plain;q=0.2, application/xhtml+xml;q=0.1, */*;q=0.1');
+		'application/json;q=0.9, text/plain;q=0.2, */*;q=0.1');
 	return $self;
 }
 
