@@ -67,7 +67,7 @@ sub authenticate
 
 =item *
 
-L<http://developer.gooddata.com/api/...> -- Specification of the GoodData authentization mechanism
+L<http://developer.gooddata.com/api/auth.html> -- Specification of the GoodData authentization mechanism
 
 =item *
 
