@@ -369,11 +369,17 @@ sub export_report
 			report => $self->compute_report ($report) }}
 	);
 
+	# This is for new release, where location is finally set correctly;
+	$result = $result->{uri} if ref $result eq 'HASH';
+
 	# Trigger the export
 	my $exported = $self->poll (
 		sub { $self->{agent}->get ($result) },
-		sub { shift->{raw} ne 'null' }
+		sub { $_[0] and exists $_[0]->{raw} and $_[0]->{raw} ne 'null' }
 	) or die 'Timed out waiting for report to export';
+
+	# Follow the link
+	$exported = $self->{agent}->get ($exported->{uri}) if exists $exported->{uri};
 
 	# Gotten the correctly coded result?
 	return $exported->{raw} if $exported->{type} eq {
