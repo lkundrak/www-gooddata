@@ -401,13 +401,11 @@ Can be unspecified if file name ends with a dot and format name
 
 sub export
 {
-	my $project = $project;
 	my $report;
 	my $file;
 	my $format;
 
 	GetOptionsFromArray (\@_,
-		'P|project' => \$project,
 		'r|report' => \$report,
 		'f|file=s' => \$file,
 		'F|format=s' => \$format,
@@ -418,7 +416,6 @@ sub export
 		if $file and not $format;
 	$format = shift if @_;
 	die 'Extra arguments' if @_;
-	die 'No project URI given' unless defined $project;
 	die 'No report URI given' unless defined $report;
 	die 'No output file given' unless defined $file;
 	die 'No output format given' unless defined $format;
