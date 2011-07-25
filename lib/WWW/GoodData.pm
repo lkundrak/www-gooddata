@@ -65,7 +65,6 @@ sub new
 	bless $self, $class;
 	$self->{agent} ||= new WWW::GoodData::Agent ($root);
 	$self->{retries} ||= 3600;
-	$self->{agent}->{error_callback} = \&error_callback;
 	return $self;
 }
 
