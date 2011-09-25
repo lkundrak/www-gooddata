@@ -26,7 +26,7 @@ use strict;
 use warnings;
 
 use base qw/LWP::UserAgent/;
-use JSON::XS;
+use JSON;
 
 our $VERSION = '1.0';
 

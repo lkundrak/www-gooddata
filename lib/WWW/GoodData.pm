@@ -25,7 +25,7 @@ use strict;
 use warnings;
 
 use WWW::GoodData::Agent;
-use JSON::XS;
+use JSON;
 use URI;
 
 our $root = new URI ('https://secure.gooddata.com/gdc');

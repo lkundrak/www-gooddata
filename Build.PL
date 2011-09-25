@@ -16,16 +16,15 @@ my $build = Module::Build->new(
 	},
 	requires => {
 		'Getopt::Long' => '2.36',
-		'JSON::XS' => 0,
+		'JSON' => 0,
 		'Pod::Usage' => 0,
-		'JSON::XS' => 0,
 		'Text::ParseWords' => 0,
 		'IO::Socket::SSL' => 0,
 		'LWP::UserAgent' => 0,
 	},
 	build_requires => {
 		'Test::Pod' => 0,
-		'JSON::XS' => 0,
+		'JSON' => 0,
 	},
 );
 
