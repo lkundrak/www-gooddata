@@ -17,7 +17,7 @@ service API built on top of L<WWW::GoodData> client library.
 
 use WWW::GoodData;
 use WWW::GoodData::Agent;
-use Getopt::Long qw/GetOptionsFromArray/;
+use Getopt::Long 2.36 qw/GetOptionsFromArray/;
 use Pod::Usage;
 use Text::ParseWords;
 use Term::ReadLine;

@@ -15,7 +15,7 @@ my $build = Module::Build->new(
 		}
 	},
 	requires => {
-		'Getopt::Long' => 0,
+		'Getopt::Long' => '2.36',
 		'JSON::XS' => 0,
 		'Pod::Usage' => 0,
 		'JSON::XS' => 0,
