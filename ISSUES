@@ -30,15 +30,6 @@ Content-Encoding header is not present, nor is MIME type in Content-Type
 
 And same contant as GET of the resource.
 
-* Broken empty responses handling
-
-They should have 204 return code and no Content-Type header.
-
-* DELETE /gdc/projects/<project_id> returns: ""
-* DELETE https://secure.gooddata.com/gdc/account/login/<id> returns: 2
-
-It should be empty.
-
 * 401 Error message without login makes little sense
 
 When requesting authenticated resource without SST, only "/gdc/account/login"
@@ -47,11 +38,6 @@ message is gotten.
 * HTML template at /gdc/exporter/executor lacks some formats
 
 Offers PDF/XLS only (no PNG).
-
-* POST to exporter resource returns invalid JSON
-
-Returns: "/gdc/exporter/chart_result/<...>/<...>".
-Should be: { uri => "/gdc/exporter/chart_result/<...>/<...>" }.
 
 * Report without reportdefinitions was seen in real life
 
@@ -63,11 +49,6 @@ Missing ReportID in Storage.pm-&gt;Register() at /opt/common/lib/XTabLib/Storage
 
 {report}{meta}{uri}
 {project}{meta}{self}
-
-* Exported document returns 202 with invalid body until exported
-
-"null" with application/json content-type.
-According to RFC 2616, body SHOULD be present and indicate status.
 
 * Crappy diagnostics from chart exporter
 
