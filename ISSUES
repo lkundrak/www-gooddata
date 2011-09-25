@@ -35,10 +35,6 @@ And same contant as GET of the resource.
 When requesting authenticated resource without SST, only "/gdc/account/login"
 message is gotten.
 
-* HTML template at /gdc/exporter/executor lacks some formats
-
-Offers PDF/XLS only (no PNG).
-
 * Report without reportdefinitions was seen in real life
 
 URI: /gdc/md/i729zexwpdr03c4hjf1vktrlwa5m590q/obj/7610
@@ -66,13 +62,6 @@ Checking 'result_req', result STRUCTURE INVALID - name of structure:'ResultReq'(
 
 One from result used should be there instead.
 
-* GET https://secure.gooddata.com/gdc/md/f7x4zbvn2sq31impugc54uqw0x34gs92/drillpaths
-
-Returned 500 Internal Server Error
-Missing address of excutor resource! at /opt/common/lib/GDCRPC.pm line 33.
-
-Is the resource still in use? Is GET method valid?
-
 * Nearly all 405 responses lack Allow headers
 
 Plain violation of 2616.
@@ -85,11 +74,6 @@ Such as empty UpdateMaql from GoodData-CL.
 
 Renders MAQL "#\n" invalid:
 Detected invalid maql statement(s): got ';' at {"line":2,"column":1}, but ['' | 'IDENTIFIER' | 'SYNCHRONIZE' | 'DROP' | 'DEFINE' | 'OBJECT' | 'ALTER' | 'INCLUDE' | 'CREATE' | 'SELECT'] is expected. at lib/WWW/GoodData/Agent.pm line 144.
-
-* Request IDs
-
-'x-gdc-request' => 'Mh64TsXmLRosHqPp:e8pbcbvdsxcji7n2'
-I probably should not get the subrequest id (following the colon).
 
 * No way to navigate to secure-di
 
