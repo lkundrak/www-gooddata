@@ -129,7 +129,7 @@ sub request
 
 	# Decode
 	my $decoded = eval { decode_json ($response->content) }
-		if $response->header ('Content-Type') eq 'application/json';
+		if $response->header ('Content-Type') =~ /^application\/json(;.*)?/;
 	$decoded = {
 		type => $response->header ('Content-Type'),
 		raw => $response->content,
