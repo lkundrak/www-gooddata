@@ -70,11 +70,10 @@ sub new
 
 # API hierarchy traversal Cache
 our %links;
-sub get_links
+sub get_canonical_links
 {
 	my $self = shift;
-
-	my $root = (ref $_[0] and ref $_[0] ne 'HASH') ? shift : new URI ($self->{agent}{root});
+	my $root = shift;
 	my @path = map { ref $_ ? $_ : { category => $_ } } @_;
 	my $link = shift @path;
 
@@ -103,18 +102,19 @@ sub get_links
 				# Metadata with interesting information outside "links"
 				if (exists $element->{$type}{links}{self}
 					and exists $element->{$type}{meta}) {
+					my $link = new URI ($element->{$type}{links}{self})->abs ($root);
 					push @{$links{$root}}, {
 						%{$element->{$type}{meta}},
 						category => $type,
 						structure => $structure,
-						link => $element->{$type}{links}{self},
+						link => $link,
 					};
-					$root = $element->{$type}{links}{self};
+					$root = $link;
 				}
 
 				# The links themselves
 				foreach my $category (keys %{$element->{$type}{links}}) {
-					my $link = $element->{$type}{links}{$category};
+					my $link = new URI ($element->{$type}{links}{$category})->abs ($root);
 					push @{$links{$root}}, {
 						structure => $structure,
 						category => $category,
@@ -129,14 +129,8 @@ sub get_links
 		}
 	}
 
-	# Uploads are on different server, but the link is incorrect
-	foreach (@{$links{$root}}) {
-		$_->{link} eq '/uploads' or next;
-		my $diroot = new URI ($_->{link}, $root->scheme)->abs ($root);
-		$diroot->host =~ /([^\.]*)(.*)/
-			and $diroot->host ("$1-di$2");
-		$_->{link} = "$diroot";
-	};
+	# Canonicalize the links
+	$_->{link} = new URI ($_->{link})->abs ($root) foreach @{$links{$root}};
 
 	my @matches = grep {
 		my $this_link = $_;
@@ -153,10 +147,26 @@ sub get_links
 
 	die 'Nonexistent component in path' unless @matches;
 	die 'Ambigious path' unless scalar @matches == 1;
-	my $new_root = new URI ($matches[0]->{link});
-	$new_root = $new_root->abs ($root);
 
-	return $self->get_links ($new_root, @path);
+	# Traverse further
+	return $self->get_canonical_links ($matches[0]->{link}, @path);
+}
+
+# This is a 'normalized' version, for convenience and compatibility
+sub get_links
+{
+	my $self = shift;
+	my $root = (ref $_[0] and ref $_[0] ne 'HASH') ? shift : '';
+
+	# Canonicalize URIs
+	$root = new URI ($root)->abs ($self->{agent}{root});
+
+	# And decanonicalize, ommiting the scheme and authority part if possible
+	my @links = $self->get_canonical_links ($root, @_);
+	$_->{link} = $_->{link}->rel ($root)->authority
+		?  $_->{link} : new URI ($_->{link}->path) foreach @links;
+
+	return @links;
 }
 
 =item B<links> PATH
@@ -168,7 +178,7 @@ PATH is an array of dictionaries, where each key-value pair
 matches properties of a link. If a plain string is specified,
 it is considered to be a match against B<category> property:
 
-  $gdc->get_links ('md', { 'category' => 'projects' });
+  $gdc->links ('md', { 'category' => 'projects' });
 
 The above call returns a list of all projects, with links to
 their metadata resources.
@@ -207,11 +217,9 @@ sub login
 	my $self = shift;
 	my ($login, $password) = @_;
 
-	# We should really get a link here instead of mangling
-	# service root location...
 	my $root = new URI ($self->{agent}{root});
-	my $netloc = $root->host.':'.$root->port;
-	$netloc =~ s/([^\.]*)/$1-di/;
+	my $staging = $self->get_uri ('uploads')->abs ($root);
+	my $netloc = $staging->host.':'.$staging->port;
 
 	$self->{agent}->credentials ($netloc,
 		'GoodData project data staging area', $login => $password);
@@ -239,9 +247,9 @@ sub logout
 	die 'Not logged in' unless defined $self->{login};
 
 	# Forget Basic authentication
-	my $netloc = $root->host.':'.$root->port;
-	# Neither on the same address, not navigatable
-	$netloc =~ s/([^\.])/$1-di/;
+	my $root = new URI ($self->{agent}{root});
+	my $staging = $self->get_uri ('uploads');
+	my $netloc = $staging->host.':'.$staging->port;
 	$self->{agent}->credentials ($netloc,
 		'GoodData project data staging area', undef, undef);
 
