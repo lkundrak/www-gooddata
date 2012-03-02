@@ -100,6 +100,8 @@ my %actions = (
 	model => \&model,
 	chmodel => \&chmodel,
 	upload => \&upload,
+	mkobject => \&mkobject,
+	mkreportdef => \&mkreportdef,
 	help => \&help,
 	shell => \&shell,
 );
@@ -546,6 +548,124 @@ sub upload
 	die 'No project URI given' unless defined $project;
 	die 'No SLI manifest given' unless defined $file;
 	$gdc->upload ($project, $file)
+}
+
+=head2 mkobject <type> <title> <expression>
+
+Create a new metadata object of a given type with expression as the only
+content.
+
+=over 4
+
+=item B<-T>, B<--type>
+
+Type of the object.
+
+=item B<-t>, B<--title>
+
+Title of the object.
+
+=item B<-s>, B<--summary>
+
+Descriptive summary of the object.
+
+=item B<-e>, B<--expr>
+
+Expression (typically MAQL).
+
+=item B<-P>, B<--project>
+
+Set or override the project to act on.
+See global B<--project> option for the detailed description.
+
+=back
+
+=cut
+
+sub mkobject
+{
+	my $project = $project;
+	my $type;
+	my $title;
+	my $summary = '';
+	my $expression;
+
+	GetOptionsFromArray (\@_,
+		'T|type=s' => \$type,
+		't|title=s' => \$title,
+		's|summary=s' => \$summary,
+		'e|expr=s' => \$expression,
+		'P|project=s' => \$project,
+	) or die 'Bad arguments to mkobject';
+	$type = shift if @_;
+	$title = shift if @_;
+	$expression = shift if @_;
+	die 'Extra arguments' if @_;
+	die 'No project URI given' unless defined $project;
+
+	print $gdc->create_object_with_expression ($project, $type, $title,
+		$summary, $expression) . "\n";
+}
+
+=head2 mkreportdef <title> [summary]
+
+Create a new reportDefinition in metadata.
+
+=over 4
+
+=item B<-t>, B<--title>
+
+Title of the object.
+
+=item B<-s>, B<--summary>
+
+Descriptive summary of the object.
+
+=item B<-m>, B<--metric>
+
+Add a metric by its URL.
+
+=item B<-d>, B<--dim>
+
+Add an attribute to dimensionality by its URL.
+
+=item B<-f>, B<--filter>
+
+Add a filter by its expression.
+
+=item B<-P>, B<--project>
+
+Set or override the project to act on.
+See global B<--project> option for the detailed description.
+
+=back
+
+=cut
+
+sub mkreportdef
+{
+	my $project = $project;
+	my $title;
+	my $summary = '';
+	my $metrics;
+	my $dim;
+	my $filters;
+
+	GetOptionsFromArray (\@_,
+		't|title=s' => \$title,
+		's|summary=s' => \$summary,
+		'P|project=s' => \$project,
+		'm|metric=s@' => \$metrics,
+		'd|dim=s@' => \$dim,
+		'f|filter=s@' => \$filters,
+	) or die 'Bad arguments to mkreportdef';
+	$title = shift if @_;
+	$summary = shift if @_;
+	die 'Extra arguments' if @_;
+	die 'No project URI given' unless defined $project;
+
+	print $gdc->create_report_definition ($project, $title, $summary, $metrics,
+		$dim, $filters ) . "\n";
 }
 
 =head2 help

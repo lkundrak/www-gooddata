@@ -520,6 +520,77 @@ sub poll
         return undef;
 }
 
+=item B<create_object_with_expression> PROJECT TYPE TITLE SUMMARY EXPRESSION
+
+Create a new metadata object of type TYPE with EXPRESSION as the only content.
+
+=cut
+
+sub create_object_with_expression
+{
+	my $self = shift;
+	my $project = shift;
+	my $type = shift or die 'No type given';
+	my $title = shift or die 'No title given';
+	my $summary = shift || '';
+	my $expression = shift or die 'No expression given';
+
+	return $self->{agent}->post (
+		$self->get_uri (new URI ($project), qw/metadata obj/),
+		{ $type => {
+			content => {
+				expression => $expression
+			},
+			meta => {
+				summary => $summary,
+				title => $title,
+			}
+		}}
+	)->{uri};
+}
+
+=item B<create_report_definition> PROJECT TITLE SUMMARY METRICS DIM FILTERS
+
+Create a new reportDefinition in metadata.
+
+=cut
+
+sub create_report_definition
+{
+	my $self = shift;
+	my $project = shift;
+	my $title = shift or die 'No title given';
+	my $summary = shift || '';
+	my $metrics = shift || [];
+	my $dim = shift || [];
+	my $filters = shift || [];
+
+	return $self->{agent}->post (
+		$self->get_uri (new URI ($project), qw/metadata obj/),
+		{ reportDefinition => {
+			content => {
+				filters => [ map +{ expression => $_ }, @$filters ],
+				grid => {
+					columns => [ "metricGroup" ],
+					metrics => [ map +{ alias => '', uri => $_ }, @$metrics ],
+					rows => [ map +{ attribute => { alias => '', uri => $_,
+						totals => [[]] } }, @$dim ],
+					sort => {
+						columns => [],
+						rows => [],
+					},
+					columnWidths => []
+				},
+				format => "grid"
+			},
+			meta => {
+				summary => $summary,
+				title => $title,
+			}
+		}}
+	)->{uri};
+}
+
 =item B<DESTROY>
 
 Log out the session with B<logout> unless not logged in.
