@@ -561,7 +561,7 @@ sub help
 	die 'Extra arguments' if @_;
 
 	print map { "$_\n" } 'Valid commands: ',
-		map { "\t$_" } keys %actions ;
+		map { "\t$_" } sort keys %actions ;
 }
 
 login ($user, $password ? "$password" : undef) if defined $user;
