@@ -573,6 +573,10 @@ Descriptive summary of the object.
 
 Expression (typically MAQL).
 
+=item B<-u>, B<--uri>
+
+Instead of creating a new object, rewrite an old one with a given URI.
+
 =item B<-P>, B<--project>
 
 Set or override the project to act on.
@@ -585,6 +589,7 @@ See global B<--project> option for the detailed description.
 sub mkobject
 {
 	my $project = $project;
+	my $uri;
 	my $type;
 	my $title;
 	my $summary = '';
@@ -596,6 +601,7 @@ sub mkobject
 		's|summary=s' => \$summary,
 		'e|expr=s' => \$expression,
 		'P|project=s' => \$project,
+		'u|uri=s' => \$uri,
 	) or die 'Bad arguments to mkobject';
 	$type = shift if @_;
 	$title = shift if @_;
@@ -603,7 +609,7 @@ sub mkobject
 	die 'Extra arguments' if @_;
 	die 'No project URI given' unless defined $project;
 
-	print $gdc->create_object_with_expression ($project, $type, $title,
+	print $gdc->create_object_with_expression ($project, $uri, $type, $title,
 		$summary, $expression) . "\n";
 }
 
@@ -633,6 +639,10 @@ Add an attribute to dimensionality by its URL.
 
 Add a filter by its expression.
 
+=item B<-u>, B<--uri>
+
+Instead of creating a new object, rewrite an old one with a given URI.
+
 =item B<-P>, B<--project>
 
 Set or override the project to act on.
@@ -645,6 +655,7 @@ See global B<--project> option for the detailed description.
 sub mkreportdef
 {
 	my $project = $project;
+	my $uri;
 	my $title;
 	my $summary = '';
 	my $metrics;
@@ -658,14 +669,15 @@ sub mkreportdef
 		'm|metric=s@' => \$metrics,
 		'd|dim=s@' => \$dim,
 		'f|filter=s@' => \$filters,
+		'u|uri=s' => \$uri,
 	) or die 'Bad arguments to mkreportdef';
 	$title = shift if @_;
 	$summary = shift if @_;
 	die 'Extra arguments' if @_;
 	die 'No project URI given' unless defined $project;
 
-	print $gdc->create_report_definition ($project, $title, $summary, $metrics,
-		$dim, $filters ) . "\n";
+	print $gdc->create_report_definition ($project, $uri, $title, $summary,
+		$metrics, $dim, $filters ) . "\n";
 }
 
 =head2 help

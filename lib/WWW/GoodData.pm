@@ -520,7 +520,7 @@ sub poll
         return undef;
 }
 
-=item B<create_object_with_expression> PROJECT TYPE TITLE SUMMARY EXPRESSION
+=item B<create_object_with_expression> PROJECT URI TYPE TITLE SUMMARY EXPRESSION
 
 Create a new metadata object of type TYPE with EXPRESSION as the only content.
 
@@ -530,13 +530,20 @@ sub create_object_with_expression
 {
 	my $self = shift;
 	my $project = shift;
+	my $uri = shift;
 	my $type = shift or die 'No type given';
 	my $title = shift or die 'No title given';
 	my $summary = shift || '';
 	my $expression = shift or die 'No expression given';
 
+	if (defined $uri) {
+		$uri = new URI ($uri);
+	} else {
+		$uri = $self->get_uri (new URI ($project), qw/metadata obj/);
+	}
+
 	return $self->{agent}->post (
-		$self->get_uri (new URI ($project), qw/metadata obj/),
+		$uri,
 		{ $type => {
 			content => {
 				expression => $expression
@@ -549,7 +556,7 @@ sub create_object_with_expression
 	)->{uri};
 }
 
-=item B<create_report_definition> PROJECT TITLE SUMMARY METRICS DIM FILTERS
+=item B<create_report_definition> PROJECT URI TITLE SUMMARY METRICS DIM FILTERS
 
 Create a new reportDefinition in metadata.
 
@@ -559,14 +566,21 @@ sub create_report_definition
 {
 	my $self = shift;
 	my $project = shift;
+	my $uri = shift;
 	my $title = shift or die 'No title given';
 	my $summary = shift || '';
 	my $metrics = shift || [];
 	my $dim = shift || [];
 	my $filters = shift || [];
 
+	if (defined $uri) {
+		$uri = new URI ($uri);
+	} else {
+		$uri = $self->get_uri (new URI ($project), qw/metadata obj/);
+	}
+
 	return $self->{agent}->post (
-		$self->get_uri (new URI ($project), qw/metadata obj/),
+		$uri,
 		{ reportDefinition => {
 			content => {
 				filters => [ map +{ expression => $_ }, @$filters ],
