@@ -100,6 +100,8 @@ my %actions = (
 	model => \&model,
 	chmodel => \&chmodel,
 	upload => \&upload,
+	mkobject => \&mkobject,
+	mkreportdef => \&mkreportdef,
 	help => \&help,
 	shell => \&shell,
 );
@@ -548,6 +550,136 @@ sub upload
 	$gdc->upload ($project, $file)
 }
 
+=head2 mkobject <type> <title> <expression>
+
+Create a new metadata object of a given type with expression as the only
+content.
+
+=over 4
+
+=item B<-T>, B<--type>
+
+Type of the object.
+
+=item B<-t>, B<--title>
+
+Title of the object.
+
+=item B<-s>, B<--summary>
+
+Descriptive summary of the object.
+
+=item B<-e>, B<--expr>
+
+Expression (typically MAQL).
+
+=item B<-u>, B<--uri>
+
+Instead of creating a new object, rewrite an old one with a given URI.
+
+=item B<-P>, B<--project>
+
+Set or override the project to act on.
+See global B<--project> option for the detailed description.
+
+=back
+
+=cut
+
+sub mkobject
+{
+	my $project = $project;
+	my $uri;
+	my $type;
+	my $title;
+	my $summary = '';
+	my $expression;
+
+	GetOptionsFromArray (\@_,
+		'T|type=s' => \$type,
+		't|title=s' => \$title,
+		's|summary=s' => \$summary,
+		'e|expr=s' => \$expression,
+		'P|project=s' => \$project,
+		'u|uri=s' => \$uri,
+	) or die 'Bad arguments to mkobject';
+	$type = shift if @_;
+	$title = shift if @_;
+	$expression = shift if @_;
+	die 'Extra arguments' if @_;
+	die 'No project URI given' unless defined $project;
+
+	print $gdc->create_object_with_expression ($project, $uri, $type, $title,
+		$summary, $expression) . "\n";
+}
+
+=head2 mkreportdef <title> [summary]
+
+Create a new reportDefinition in metadata.
+
+=over 4
+
+=item B<-t>, B<--title>
+
+Title of the object.
+
+=item B<-s>, B<--summary>
+
+Descriptive summary of the object.
+
+=item B<-m>, B<--metric>
+
+Add a metric by its URL.
+
+=item B<-d>, B<--dim>
+
+Add an attribute to dimensionality by its URL.
+
+=item B<-f>, B<--filter>
+
+Add a filter by its expression.
+
+=item B<-u>, B<--uri>
+
+Instead of creating a new object, rewrite an old one with a given URI.
+
+=item B<-P>, B<--project>
+
+Set or override the project to act on.
+See global B<--project> option for the detailed description.
+
+=back
+
+=cut
+
+sub mkreportdef
+{
+	my $project = $project;
+	my $uri;
+	my $title;
+	my $summary = '';
+	my $metrics;
+	my $dim;
+	my $filters;
+
+	GetOptionsFromArray (\@_,
+		't|title=s' => \$title,
+		's|summary=s' => \$summary,
+		'P|project=s' => \$project,
+		'm|metric=s@' => \$metrics,
+		'd|dim=s@' => \$dim,
+		'f|filter=s@' => \$filters,
+		'u|uri=s' => \$uri,
+	) or die 'Bad arguments to mkreportdef';
+	$title = shift if @_;
+	$summary = shift if @_;
+	die 'Extra arguments' if @_;
+	die 'No project URI given' unless defined $project;
+
+	print $gdc->create_report_definition ($project, $uri, $title, $summary,
+		$metrics, $dim, $filters ) . "\n";
+}
+
 =head2 help
 
 Print list of available commands.
@@ -561,7 +693,7 @@ sub help
 	die 'Extra arguments' if @_;
 
 	print map { "$_\n" } 'Valid commands: ',
-		map { "\t$_" } keys %actions ;
+		map { "\t$_" } sort keys %actions ;
 }
 
 login ($user, $password ? "$password" : undef) if defined $user;
