@@ -501,6 +501,43 @@ sub schedule_msetl_graph {
 		$project_uri, $type, $cron, $params, $hidden_params);
 }
 
+=item B<create_clover_transformation> PROJECT_URI TEMPLATE TRANSFORMATION_ID NAME
+
+Create a clover transformation given its project uri, template, clover
+transformation id in template and optionaly name, return created transformation
+object.
+
+=cut
+
+sub create_clover_transformation
+{
+	my $self = shift;
+	my $projectUri = shift;
+	my $template = shift;
+	my $transformation = shift;
+	my $name = shift || $transformation;
+
+	my $file = $transformation.'.zip';
+	my $path = '/uploads/'.$file;
+
+	# download clover transformation zip file from project template
+	my $content = $self->{agent}->get ($template.'/'.$file);
+
+	# upload clover transformation zip file
+	my $uploads = new URI ($self->get_uri ('uploads'));
+	$uploads->path_segments ($uploads->path_segments, $file);
+	$self->{agent}->request (new HTTP::Request (PUT => $uploads,
+		['Content-Type' => 'application/zip'], $content->{raw}));
+
+	# create transformation
+	return $self->{agent}->post ($projectUri."/etl/clover/transformations", { #TODO links does not exists
+		cloverTransformation => {
+			name => $name,
+			path => $path
+		}
+	});
+}
+
 =item B<reports> PROJECT
 
 Return array of links to repoort resources on metadata server.
