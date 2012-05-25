@@ -452,6 +452,29 @@ sub assign_user
 	});
 }
 
+=item B<schedule> PROJECT_URI CRON PARAMS HIDDEN_PARAMS
+
+Create a schedule given its project, type, cron expression and optionally
+parameters and hidden parameters, return created schedule object.
+
+=cut
+
+sub schedule {
+	my $self = shift;
+	my $project_uri = shift;
+	my $type = shift;
+	my $cron = shift;
+	my $params = shift || { };
+	my $hidden_params = shift || { };
+
+	return $self->{agent}->post ($project_uri.'/schedules', {schedule => { #TODO no link to schedules does not exists
+		type => $type,
+		params => $params,
+		hiddenParams => $hidden_params,
+		cron => $cron
+	}});
+}
+
 =item B<reports> PROJECT
 
 Return array of links to repoort resources on metadata server.
