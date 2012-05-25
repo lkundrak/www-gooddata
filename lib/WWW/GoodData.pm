@@ -322,10 +322,13 @@ sub delete_project
 	$self->{agent}->delete ($uri);
 }
 
-=item B<create_project> TITLE SUMMARY
+=item B<create_project> TITLE SUMMARY TEMPLATE
 
-Create a project given its title and optionally summary,
+Create a project given its title and optionally summary and project template,
 return its identifier.
+
+The list of valid project templates is available from the template server:
+L<https://secure.gooddata.com/projectTemplates/>.
 
 =cut
 
@@ -334,6 +337,7 @@ sub create_project
 	my $self = shift;
 	my $title = shift or die 'No title given';
 	my $summary = shift || '';
+	my $template = shift;
 
 	# The redirect magic does not work for POSTs and we can't really
 	# handle 401s until the API provides reason for them...
@@ -346,6 +350,7 @@ sub create_project
 			meta => {
 				summary => $summary,
 				title => $title,
+				($template ? (projectTemplate => $template) : ()),
 			}
 	}})->{uri};
 }
