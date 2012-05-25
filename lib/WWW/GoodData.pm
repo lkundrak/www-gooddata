@@ -384,6 +384,45 @@ sub create_user
 	}})->{uri};
 }
 
+=item B<get_roles>
+
+Gets project roles. Project is identified by its id.
+return array of project roles.
+
+=cut
+
+sub get_roles
+{
+	my $self = shift;
+	my $project = shift;
+
+	return $self->{agent}->get (
+		$self->get_uri (new URI($project), 'roles'))->{projectRoles}{roles};
+}
+
+=item B<get_roles_by_id>
+
+Gets project roles. Project is identified by its id.
+return hash map role id => role uri.
+
+=cut
+
+sub get_roles_by_id
+{
+	my $self = shift;
+	my $project = shift;
+	my $rolesUris = $self->get_roles ($project);
+
+	my %roles;
+
+	foreach my $roleUri (@$rolesUris) {
+		my $role = $self->{agent}-> get ($roleUri);
+		my $roleId = $role->{projectRole}{meta}{identifier};
+		$roles{$roleId} = $roleUri;
+	}
+	return %roles;
+}
+
 =item B<reports> PROJECT
 
 Return array of links to repoort resources on metadata server.
