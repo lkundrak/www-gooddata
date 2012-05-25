@@ -355,6 +355,35 @@ sub create_project
 	}})->{uri};
 }
 
+=item B<create_user> LOGIN PASSWORD FIRST_NAME LAST_NAME PHONE COMPANY
+
+Create a user given its login, password, first name, surname, phone and optionally company,
+return his identifier.
+
+=cut
+
+sub create_user
+{
+	my $self = shift;
+	my $login = shift;
+	my $passwd = shift;
+	my $firstname = shift;
+	my $lastname = shift;
+	my $phone = shift;
+	my $company = shift || '';
+
+	return $self->{agent}->post ('/gdc/account/domains/default/users', { #TODO links does not exists
+		accountSetting => {
+			login => $login,
+			password => $passwd,
+			verifyPassword => $passwd,
+			firstName => $firstname,
+			lastName => $lastname,
+			phoneNumber => $phone,
+			companyName => $company
+	}})->{uri};
+}
+
 =item B<reports> PROJECT
 
 Return array of links to repoort resources on metadata server.
