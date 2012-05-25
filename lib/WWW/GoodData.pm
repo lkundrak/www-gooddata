@@ -423,6 +423,35 @@ sub get_roles_by_id
 	return %roles;
 }
 
+=item B<assign_user> USER PROJECT ROLE
+
+Assign user to project.
+return his identifier.
+
+=cut
+
+sub assign_user
+{
+	my $self = shift;
+	my $user = shift;
+	my $project = shift;
+	my $role = shift;
+
+	my @userRoles = ($role);
+
+	return $self->{agent}->post ($self->get_uri (new URI($project),'users'), {
+		user => {
+			content => {
+				status => "ENABLED",
+				userRoles => \@userRoles
+			},
+			links => {
+				self => $user
+			}
+		}
+	});
+}
+
 =item B<reports> PROJECT
 
 Return array of links to repoort resources on metadata server.
