@@ -364,6 +364,42 @@ sub create_project
 	}})->{uri};
 }
 
+=item B<create_user> DOMAIN EMAIL LOGIN PASSWORD FIRST_NAME LAST_NAME PHONE COMPANY SSO_PROVIDER
+
+Create a user given its email, login, password, first name, surname, phone and optionally company,
+sso provider in domain.
+
+Returns user identifier (URI).
+
+=cut
+
+sub create_user
+{
+	my $self = shift;
+	my $domain_uri = shift || die "No domain specified";
+	my $email = shift || die "Email must be specified";
+	my $login = shift || $email;
+	my $passwd = shift;
+	my $firstname = shift;
+	my $lastname = shift;
+	my $phone = shift;
+	my $company = shift || '';
+	my $sso_provider = shift;
+
+	return $self->{agent}->post ($domain_uri."/users", { #TODO links does not exists in REST API
+		accountSetting => {
+			login => $login,
+			email => $email,
+			password => $passwd,
+			verifyPassword => $passwd,
+			firstName => $firstname,
+			lastName => $lastname,
+			phoneNumber => $phone,
+			companyName => $company,
+			($sso_provider ? (ssoProvider => $sso_provider) : ()),
+	}})->{uri};
+}
+
 =item B<reports> PROJECT
 
 Return array of links to repoort resources on metadata server.
