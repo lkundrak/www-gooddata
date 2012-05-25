@@ -475,6 +475,32 @@ sub schedule {
 	}});
 }
 
+=item B<schedule_msetl_graph> PROJECT_URI TRANSFORMATION_ID GRAPH_NAME CRON PARAMS HIDDEN_PARAMS
+
+Create a MSETL schedule given its project, clover transformation id,
+clover graph to schedule, cron expression and optionally
+parameters and hidden parameters, return created schedule object.
+
+=cut
+
+sub schedule_msetl_graph {
+	my $self = shift;
+	my $project_uri = shift;
+	my $trans_id = shift;
+	my $graph = shift;
+	my $cron = shift;
+	my $params = shift || { };
+	my $hidden_params = shift || { };
+
+	my $type = "MSETL";
+
+	$params->{"TRANSFORMATION_ID"} = $trans_id;
+	$params->{"CLOVER_GRAPH"} = $graph;
+
+	return $self->schedule (
+		$project_uri, $type, $cron, $params, $hidden_params);
+}
+
 =item B<reports> PROJECT
 
 Return array of links to repoort resources on metadata server.
