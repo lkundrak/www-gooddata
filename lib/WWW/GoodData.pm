@@ -355,6 +355,28 @@ sub create_project
 	}})->{uri};
 }
 
+=item B<wait_project_enabled> PROJECT_URI
+
+Wait until project identified by its uri is in enabled state,
+return its identifier.
+
+=cut
+
+sub wait_project_enabled
+{
+	my $self = shift;
+	my $project_uri = shift || die 'Project uri was not specified.';
+
+	my $state;
+	my $exported = $self->poll (
+		sub { $self->{agent}->get ($project_uri) },
+		sub { $_[0] and exists $_[0]->{project} and exists $_[0]->{project}{content} and exists $_[0]->{project}{content}{state} and
+			(($state = $_[0]->{project}{content}{state}) !~ /^(PREPARING|PREPARED|LOADING)$/)
+		}
+	) or die 'Timed out waiting for project preparation';
+	($state eq 'ENABLED') or die "Unable to enable project";
+}
+
 =item B<create_user> LOGIN PASSWORD FIRST_NAME LAST_NAME PHONE COMPANY
 
 Create a user given its login, password, first name, surname, phone and optionally company,
