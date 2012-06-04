@@ -369,7 +369,7 @@ sub create_user
 			password => $passwd,
 			verifyPassword => $passwd,
 			firstName => $firstname,
-			lastName => $firstname,
+			lastName => $lastname,
 			phoneNumber => $phone,
 			companyName => $company
 	}})->{uri};
