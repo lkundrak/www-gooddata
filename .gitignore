@@ -7,3 +7,5 @@ META.yml
 *.sw?
 *.tar.gz
 WWW-GoodData-*
+.project
+
