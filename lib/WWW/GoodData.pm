@@ -261,6 +261,34 @@ sub logout
 	$self->{login} = undef;
 }
 
+=item B<change_passwd>
+
+Change user password.
+
+=cut
+
+sub change_passwd
+{
+    my $self = shift;
+    my $old_passwd = shift or die 'No old password given';
+    my $new_passwd = shift or die 'No new password given';
+
+    die 'Not logged in' unless defined $self->{login};
+
+    my $profile = $self->{agent}->get ($self->{login}{userLogin}{profile});
+    my $new_profile = {
+        'accountSetting' => {
+            'old_password' => $old_passwd,
+            'password' => $new_passwd,
+            'verifyPassword' => $new_passwd,
+            'firstName' => $profile->{accountSetting}->{firstName},
+            'lastName' => $profile->{accountSetting}->{lastName}
+        }
+    };
+
+    $self->{agent}->put ($self->{login}{userLogin}{profile}, $new_profile);
+}
+
 =item B<projects>
 
 Return array of links to project resources on metadata server.
