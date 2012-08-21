@@ -90,6 +90,26 @@ sub post
 	return $self->SUPER::post ($uri, @args);
 }
 
+=item put URI, BODY, PARAMS
+
+Constructs and issues a PUT request.
+
+Compared to stock L<LWP::UserAgent>, the extra body parameter
+is encoded into JSON and set as request content, which is the
+only way to set the request content.
+
+The rest of parameters are passed to L<LWP::UserAgent> untouched.
+
+=cut
+
+sub put
+{
+	my ($self, $uri, $body, @args) = @_;
+	push @args,'Content-Type' => 'application/json',
+		Content => encode_json ($body);
+	return $self->SUPER::put ($uri, @args);
+}
+
 =item delete URI
 
 Convenience method for constructing and issuing a DELETE request.
