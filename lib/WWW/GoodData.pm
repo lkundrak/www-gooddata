@@ -679,14 +679,22 @@ L<WWW::GoodData::Agent> -- GoodData API-aware user agent
 
 =head1 COPYRIGHT
 
-Copyright 2011, Lubomir Rintel
+Copyright 2011, 2012 Lubomir Rintel
+
+Copyright 2012 Adam Stulpa, Jan Orel, Tomas Janousek
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 
-=head1 AUTHOR
+=head1 AUTHORS
 
 Lubomir Rintel C<lkundrak@v3.sk>
+
+Adam Stulpa C<adam.stulpa@gooddata.com>
+
+Jan Orel C<jan.orel@gooddata.com>
+
+Tomas Janousek C<tomi@nomi.cz>
 
 =cut
 
