@@ -50,8 +50,10 @@ sub authenticate
 
 	# Refresh the token cookie
 	# We should obtain the URI from WWW::GoodData somehow...
-	#die $gdc->get_uri (qw/token/);
-	$agent->get ('/gdc/account/token');
+	my $token_uri = $request->uri->clone;
+	$token_uri->path ('/gdc/account/token');
+	$token_uri->fragment (undef);
+	$agent->get ($token_uri);
 
 	$request->header (Cookie => '');
 
