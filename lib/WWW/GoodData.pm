@@ -322,13 +322,16 @@ sub delete_project
 	$self->{agent}->delete ($uri);
 }
 
-=item B<create_project> TITLE SUMMARY TEMPLATE
+=item B<create_project> TITLE SUMMARY TEMPLATE DRIVER TOKEN
 
-Create a project given its title and optionally summary and project template,
+Create a project given its title and optionally summary, project template,
+db engine driver and authorization token
 return its identifier.
 
 The list of valid project templates is available from the template server:
 L<https://secure.gooddata.com/projectTemplates/>.
+
+Valid db engine drivers are 'Pg' (default) and 'mysql'.
 
 =cut
 
@@ -338,6 +341,8 @@ sub create_project
 	my $title = shift or die 'No title given';
 	my $summary = shift || '';
 	my $template = shift;
+	my $driver= shift;
+	my $token = shift;
 
 	# The redirect magic does not work for POSTs and we can't really
 	# handle 401s until the API provides reason for them...
@@ -345,8 +350,12 @@ sub create_project
 
 	return $self->{agent}->post ($self->get_uri ('projects'), {
 		project => {
-			# No hook to override this; use web UI
-			content => { guidedNavigation => 1 },
+			content => {
+				# No hook to override this; use web UI
+				guidedNavigation => 1,
+				($driver ? (driver => $driver) : ()),
+				($token ? (authorizationToken => $token) : ())
+			},
 			meta => {
 				summary => $summary,
 				title => $title,

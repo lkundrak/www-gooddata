@@ -306,6 +306,19 @@ Title of the project.
 
 Descriptive summary of the project.
 
+=item B<-e>, B<--template>
+
+Project template. The list of valid project templates is available from
+the template server: L<https://secure.gooddata.com/projectTemplates/>.
+
+=item B<-d>, B<--driver>
+
+Valid db engine drivers are 'Pg' (default) and 'mysql'.
+
+=item B<-k>, B<--token>
+
+Authorization token.
+
 =back
 
 =cut
@@ -314,17 +327,26 @@ sub mkproject
 {
 	my $title;
 	my $summary = '';
+	my $template;
+	my $driver;
+	my $token;
 
 	GetOptionsFromArray (\@_,
 		't|title=s' => \$title,
 		's|summary=s' => \$summary,
+		'e|template=s' => \$template,
+		'd|driver=s' => \$driver,
+		'k|token=s' => \$token,
 	) or die 'Bad arguments to mkproject';
 	$title = shift if @_;
 	$summary = shift if @_;
+	$template = shift if @_;
+	$driver = shift if @_;
+	$token = shift if @_;
 	die 'Extra arguments' if @_;
 	die 'No project title given' unless defined $title;
 
-	$project = $gdc->create_project ($title, $summary);
+	$project = $gdc->create_project ($title, $summary, $template, $driver, $token);
 }
 
 =head2 lsreports
