@@ -885,6 +885,17 @@ The attribute is specified by the label identifier and the
 values by uploaded values of the selected label (a.k.a the
 attributeDisplayForm).
 
+Example:
+
+$gdc->login($login, $passwd) or die "Unable to authenticate\n";
+
+my @values = ( 'CA', 'CO' );
+my $resp = $gdc->assign_user_filter (
+	"/gdc/projects/abcdabcdabcd0aabcbab",
+	"joe@example.org",
+	"label.region.code",
+	@values);
+
 =cut
 
 sub assign_user_filter
