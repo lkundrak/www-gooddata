@@ -147,6 +147,9 @@ sub request
 	# Pass processed response from subrequest (redirect)
 	return $response if ref $response eq 'HASH';
 
+	# Do not bother checking content and type if there's none
+	return undef if $response->code == 204;
+
 	# Decode
 	my $decoded = eval { decode_json ($response->content) }
 		if $response->header ('Content-Type') =~ /^application\/json(;.*)?/;
