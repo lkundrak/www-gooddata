@@ -94,6 +94,8 @@ my %actions = (
 	lsprojects => \&lsprojects,
 	rmproject => \&rmproject,
 	mkproject => \&mkproject,
+	mkuser => \&mkuser,
+	lsroles => \&lsroles,
 	project => \&project,
 	lsreports => \&lsreports,
 	export => \&export,
@@ -264,6 +266,37 @@ sub lsprojects
 	}
 }
 
+=head2 lsroles
+
+Print a list of available roles in project.
+
+=over 4
+
+=item B<-P>, B<--project>
+
+Set or override the project to act on.
+See global B<--project> option for the detailed description.
+
+=back
+
+=cut
+
+sub lsroles
+{
+	my $this_project = $project;
+
+	GetOptionsFromArray (\@_,
+		'P|project=s' => \$this_project,
+	) or die 'Bad arguments to lsroles';
+	die 'Extra arguments' if @_;
+
+	die "No project selected" unless $this_project;
+
+	foreach my $role (@{$gdc->get_roles($this_project)}) {
+		print $role."\n";
+	}
+}
+
 =head2 rmproject
 
 Delete a project.
@@ -290,6 +323,98 @@ sub rmproject
 	die 'No project name given' unless defined $project;
 
 	$gdc->delete_project ($project);
+}
+
+=head2 mkuser <domain> <email> [login] <password> <firstname> <lastname> <phone> [company] [sso_provider]
+
+Create user.
+
+=over 4
+
+=item B<-d>, B<--domain>
+
+Domain in which will be user created. Default is 'default'.
+
+=back
+
+=cut
+
+=item B<-e>, B<--email>
+
+User email.
+
+=back
+
+=item B<-l>, B<--login>
+
+User login. Same as email if no login is provided
+
+=back
+
+=item B<-p>, B<--passwd>
+
+User password.
+
+=back
+
+=item B<-f>, B<--firstname>
+
+User firstname.
+
+=back
+
+=item B<-l>, B<--lastname>
+
+User lastname.
+
+=back
+
+=item B<-t>, B<--phone>
+
+User phone number.
+
+=back
+
+=item B<-c>, B<--company>
+
+User company.
+
+=back
+
+=item B<-o>, B<--sso>
+
+User domain.
+
+=back
+
+=cut
+
+sub mkuser
+{
+	my $domain;
+	my $email;
+	my $login;
+	my $passwd;
+	my $firstname;
+	my $lastname;
+	my $phone;
+	my $company;
+	my $sso_provider;
+
+	GetOptionsFromArray (\@_,
+		'd|domain=s' => \$domain,
+		'e|email=s' => \$email,
+		'l|login=s' => \$login,
+		'p|passwd=s' => \$passwd,
+		'f|firstname=s' => \$firstname,
+		'l|lastname=s' => \$lastname,
+		't|phone=s' => \$phone,
+		'c|company=s' => \$company,
+		'o|sso=s' => \$sso_provider,
+	) or die 'Bad arguments to mkuser';
+
+	$user = $gdc->create_user ($domain, $email, $login, $passwd, $firstname,
+		$lastname, $phone, $company, $sso_provider);
 }
 
 =head2 mkproject <title> [summary]

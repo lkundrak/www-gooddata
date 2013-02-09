@@ -78,3 +78,5 @@ Detected invalid maql statement(s): got ';' at {"line":2,"column":1}, but ['' | 
 * https://secure-di.gooddata.com/gdc/uploads/nonexistent
 
 Returns same as https://secure-di.gooddata.com/gdc/uploads instead of 404
+
+* /gdc/account/domains/ is not navigatable 

@@ -364,6 +364,87 @@ sub create_project
 	}})->{uri};
 }
 
+=item B<create_user> DOMAIN EMAIL LOGIN PASSWORD FIRST_NAME LAST_NAME PHONE COMPANY SSO_PROVIDER
+
+Create a user given its email, login, password, first name, surname, phone and optionally company,
+sso provider in domain.
+
+Returns user identifier (URI).
+
+=cut
+
+sub create_user
+{
+	my $self = shift;
+	my $domain_uri = shift || die "No domain specified";
+	my $email = shift || die "Email must be specified";
+	my $login = shift || $email;
+	my $passwd = shift;
+	my $firstname = shift;
+	my $lastname = shift;
+	my $phone = shift;
+	my $company = shift || '';
+	my $sso_provider = shift;
+
+	return $self->{agent}->post ($domain_uri."/users", { #TODO links does not exists in REST API
+		accountSetting => {
+			login => $login,
+			email => $email,
+			password => $passwd,
+			verifyPassword => $passwd,
+			firstName => $firstname,
+			lastName => $lastname,
+			phoneNumber => $phone,
+			companyName => $company,
+			($sso_provider ? (ssoProvider => $sso_provider) : ()), 
+	}})->{uri};
+}
+
+=item B<get_roles> PROJECT
+
+Gets project roles. Project is identified by its id.
+
+Return array of project roles.
+
+=cut
+
+sub get_roles
+{
+	my $self = shift;
+	my $project = shift;
+
+	return $self->{agent}->get (
+		$self->get_uri (new URI($project), 'roles'))->{projectRoles}{roles};
+}
+
+=item B<get_roles_by_name> PROJECT
+
+Gets project roles 
+
+Return hash map role name => role uri. Example:
+{
+	"adminRole" => "/gdc/projects/project_id/roles/2",
+	"unverifiedAdminRole" => "/gdc/projects/project_id/roles/3",
+}
+
+=cut
+
+sub get_roles_by_name
+{
+	my $self = shift;
+	my $project = shift;
+	my $rolesUris = $self->get_roles ($project);
+
+	my %roles;
+
+	foreach my $roleUri (@$rolesUris) {
+		my $role = $self->{agent}-> get ($roleUri);
+		my $roleId = $role->{projectRole}{meta}{identifier};
+		$roles{$roleId} = $roleUri;
+	}
+	return %roles;
+}
+
 =item B<reports> PROJECT
 
 Return array of links to repoort resources on metadata server.
