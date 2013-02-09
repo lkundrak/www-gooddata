@@ -416,6 +416,35 @@ sub get_roles
 	return $self->{agent}->get (
 		$self->get_uri (new URI($project), 'roles'))->{projectRoles}{roles};
 }
+
+=item B<get_roles_by_name> PROJECT
+
+Gets project roles 
+
+Return hash map role name => role uri. Example:
+{
+	"adminRole" => "/gdc/projects/project_id/roles/2",
+	"unverifiedAdminRole" => "/gdc/projects/project_id/roles/3",
+}
+
+=cut
+
+sub get_roles_by_name
+{
+	my $self = shift;
+	my $project = shift;
+	my $rolesUris = $self->get_roles ($project);
+
+	my %roles;
+
+	foreach my $roleUri (@$rolesUris) {
+		my $role = $self->{agent}-> get ($roleUri);
+		my $roleId = $role->{projectRole}{meta}{identifier};
+		$roles{$roleId} = $roleUri;
+	}
+	return %roles;
+}
+
 =item B<reports> PROJECT
 
 Return array of links to repoort resources on metadata server.
