@@ -334,7 +334,7 @@ sub rmproject
 	$gdc->delete_project ($project);
 }
 
-=head2 mkuser <domain> <email> [login] <password> <firstname> <lastname> <phone> [company] [sso_provider]
+=head2 mkuser <email> <firstname> <lastname>
 
 Create user.
 
@@ -342,57 +342,42 @@ Create user.
 
 =item B<-d>, B<--domain>
 
-Domain in which will be user created. Default is 'default'.
+URI of an user domain in which will be user created.
 
-=back
-
-=cut
+Defaults to C</gdc/account/domains/default>, which is almost definitely useless to you.
+Get a proper domain URI from your support representative.
 
 =item B<-e>, B<--email>
 
 User email.
 
-=back
-
 =item B<-l>, B<--login>
 
 User login. Same as email if no login is provided
 
-=back
-
 =item B<-p>, B<--passwd>
 
-User password.
-
-=back
+User password. Will be asked for if not provided.
 
 =item B<-f>, B<--firstname>
 
-User firstname.
-
-=back
+User first name.
 
 =item B<-l>, B<--lastname>
 
-User lastname.
-
-=back
+User last name.
 
 =item B<-t>, B<--phone>
 
 User phone number.
 
-=back
-
 =item B<-c>, B<--company>
 
 User company.
 
-=back
-
 =item B<-o>, B<--sso>
 
-User domain.
+User company's DNS suffix, if SSO is used.
 
 =back
 
@@ -400,7 +385,7 @@ User domain.
 
 sub mkuser
 {
-	my $domain;
+	my $domain = '/gdc/account/domains/default';
 	my $email;
 	my $login;
 	my $passwd;
@@ -421,6 +406,14 @@ sub mkuser
 		'c|company=s' => \$company,
 		'o|sso=s' => \$sso_provider,
 	) or die 'Bad arguments to mkuser';
+	$email = shift if @_;
+	$firstname = shift if @_;
+	$lastname = shift if @_;
+	die 'Extra arguments' if @_;
+	die 'No user e-mail given' unless defined $email;
+	die 'No first name given' unless defined $firstname;
+	die 'No last name given' unless defined $lastname;
+	$passwd = password ("New user's Password") unless defined $passwd;
 
 	$user = $gdc->create_user ($domain, $email, $login, $passwd, $firstname,
 		$lastname, $phone, $company, $sso_provider);
