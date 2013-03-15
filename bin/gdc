@@ -325,7 +325,7 @@ sub rmproject
 	$gdc->delete_project ($project);
 }
 
-=head2 mkuser <domain> <email> [login] <password> <firstname> <lastname> <phone> [company] [sso_provider]
+=head2 mkuser [domain] [email]
 
 Create user.
 
@@ -333,53 +333,35 @@ Create user.
 
 =item B<-d>, B<--domain>
 
-Domain in which will be user created. Default is 'default'.
-
-=back
-
-=cut
+Domain in which will be user created.
 
 =item B<-e>, B<--email>
 
 User email.
 
-=back
-
 =item B<-l>, B<--login>
 
 User login. Same as email if no login is provided
-
-=back
 
 =item B<-p>, B<--passwd>
 
 User password.
 
-=back
-
 =item B<-f>, B<--firstname>
 
 User firstname.
-
-=back
 
 =item B<-l>, B<--lastname>
 
 User lastname.
 
-=back
-
 =item B<-t>, B<--phone>
 
 User phone number.
 
-=back
-
 =item B<-c>, B<--company>
 
 User company.
-
-=back
 
 =item B<-o>, B<--sso>
 
@@ -412,6 +394,9 @@ sub mkuser
 		'c|company=s' => \$company,
 		'o|sso=s' => \$sso_provider,
 	) or die 'Bad arguments to mkuser';
+	$domain = shift if @_;
+	$email = shift if @_;
+	die 'Extra arguments' if @_;
 
 	$user = $gdc->create_user ($domain, $email, $login, $passwd, $firstname,
 		$lastname, $phone, $company, $sso_provider);
