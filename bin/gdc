@@ -84,6 +84,24 @@ new Getopt::Long::Parser (
 ) or pod2usage (2);
 $command = shift if @ARGV;
 
+sub password
+{
+	my $prompt = shift;
+	my $password;
+
+	return undef unless -t STDIN;
+
+	# stty might not be portable to NT and such
+	system 'stty -echo'
+		and die 'Can not ask for password securely';
+	print "$prompt: ";
+	chomp ($password = <STDIN>);
+	print "\n";
+	system 'stty echo';
+
+	return $password;
+}
+
 =head1 COMMANDS
 
 =cut 
@@ -170,16 +188,7 @@ sub login
 	$password = shift if @_;
 	die 'Extra arguments' if @_;
 	die 'No user name given' unless defined $user;
-
-	# stty might not be portable to NT and such
-	if (not defined $password and -t STDIN) {
-		system 'stty -echo'
-			and die 'Can not ask for password securely';
-		print 'Password: ';
-		chomp ($password = <STDIN>);
-		print "\n";
-		system 'stty echo';
-	}
+	$password = password ('Password') unless defined $password;
 
 	$gdc->login ($user, $password);
 }
