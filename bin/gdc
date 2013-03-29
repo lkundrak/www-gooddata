@@ -355,7 +355,7 @@ User email.
 
 User login. Same as email if no login is provided
 
-=item B<-p>, B<--passwd>
+=item B<-p>, B<--password>
 
 User password. Will be asked for if not provided.
 
@@ -399,7 +399,7 @@ sub mkuser
 		'd|domain=s' => \$domain,
 		'e|email=s' => \$email,
 		'l|login=s' => \$login,
-		'p|passwd=s' => \$passwd,
+		'p|password=s' => \$passwd,
 		'f|firstname=s' => \$firstname,
 		'l|lastname=s' => \$lastname,
 		't|phone=s' => \$phone,
