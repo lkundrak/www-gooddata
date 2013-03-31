@@ -467,7 +467,7 @@ sub export_report
 	my $result = $self->{agent}->post (
 		$self->get_uri (qw/report-exporter exporter-executor/),
 		{ result_req => { format => $format,
-			report => $self->compute_report ($report) }}
+			result => $self->compute_report ($report) }}
 	);
 
 	# This is for new release, where location is finally set correctly;
