@@ -446,8 +446,8 @@ sub compute_report
 
 	return $self->{agent}->post (
 		$self->get_uri (qw/xtab xtab-executor3/),
-		{ report_req => { report => $report }}
-	)->{reportResult2}{meta}{uri};
+		{ report_req => { report => ''.$report }}
+	);
 }
 
 =item B<export_report> REPORT FORMAT
