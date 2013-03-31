@@ -483,11 +483,15 @@ sub export_report
 	$exported = $self->{agent}->get ($exported->{uri}) if exists $exported->{uri};
 
 	# Gotten the correctly coded result?
-	return $exported->{raw} if $exported->{type} eq {
+	my $wanted = $format;
+	my %compat = (
 		png => 'image/png',
 		pdf => 'application/pdf',
 		xls => 'application/vnd.ms-excel',
-	}->{$format};
+		csv => 'text/csv',
+	);
+	$wanted = $compat{$wanted} if exists $compat{$wanted};
+	return $exported->{raw} if $exported->{type} =~ /^$wanted/;
 
 	die 'Wrong type of content returned';
 }
