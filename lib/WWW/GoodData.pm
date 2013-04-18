@@ -418,7 +418,7 @@ sub get_roles
 }
 =item B<reports> PROJECT
 
-Return array of links to repoort resources on metadata server.
+Return array of links to report resources on metadata server.
 
 =cut
 
