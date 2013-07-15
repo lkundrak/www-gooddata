@@ -248,7 +248,7 @@ sub logout
 
 	# Forget Basic authentication
 	my $root = new URI ($self->{agent}{root});
-	my $staging = $self->get_uri ('uploads');
+	my $staging = $self->get_uri ('uploads')->abs ($root);
 	my $netloc = $staging->host.':'.$staging->port;
 	$self->{agent}->credentials ($netloc,
 		'GoodData project data staging area', undef, undef);
