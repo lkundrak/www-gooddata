@@ -8,3 +8,4 @@ META.yml			Distribution Metadata
 t/pod.t				POD test
 t/require.t			Compilation test
 ISSUES				API issues
+CONTRIBUTING			How to add functionality
