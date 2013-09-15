@@ -417,6 +417,36 @@ sub get_roles
 	return $self->{agent}->get (
 		$self->get_uri (new URI($project), 'roles'))->{projectRoles}{roles};
 }
+
+=item B<get_users> PROJECT ALL ROLE
+
+Gets project users.
+
+Return reference to array of project users.
+If parameter ALL is not given or is false, return only ENABLED users.
+If parameter ROLE is specified, return only users with that role.
+
+=cut
+
+sub get_users
+{
+	my $self = shift;
+	my $project = shift;
+	my $all = shift;
+	my $role = shift;
+
+	my @users = @{ $self->{agent}->get (
+		$self->get_uri (new URI($project), 'users'))->{users} };
+
+	@users = grep ($_->{user}{content}{status} eq 'ENABLED', @users)
+		unless $all;
+
+	@users = grep (grep (/\A$role\Z/i, @{$_->{user}{content}{userRoles}}), @users)
+		if $role;
+
+	return \@users;
+}
+
 =item B<reports> PROJECT
 
 Return array of links to repoort resources on metadata server.
