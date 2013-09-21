@@ -434,6 +434,39 @@ sub reports
 		qw/metadata query reports/, {});
 }
 
+=item B<check_reports> PROJECT VERBOSE
+
+Check computability of reports, and return number of incomputable reports.
+The method uses the explain2 resource.
+
+=cut
+
+sub check_reports
+{
+	my $self = shift;
+	my $project = shift;
+	my $verbose = shift;
+	my $errs;
+
+	for my $r ($self->reports ($project)) {
+		my @defs = @{ $self->{agent}->get ($r->{link})
+			->{report}->{content}->{definitions} };
+		next unless @defs;
+
+		print $r->{link} . ' [' . $r->{title} . '] ... ' if $verbose;
+
+		eval { $self->{agent}->get ($defs[-1] . '/explain2?type=oqt'); };
+
+		if ($@) {
+			print "ERROR\n$@" if $verbose;
+			++$errs;
+		} else {
+			print "OK\n" if $verbose;
+		}
+	}
+	return $errs;
+}
+
 =item B<compute_report> REPORT
 
 Trigger a report computation and return the URI of the result resource.
