@@ -684,7 +684,7 @@ sub create_report_definition
 			content => {
 				filters => [ map +{ expression => $_ }, @$filters ],
 				grid => {
-					columns => [ "metricGroup" ],
+					columns => [ @$metrics ? "metricGroup" : () ],
 					metrics => [ map +{ alias => '', uri => $_ }, @$metrics ],
 					rows => [ map +{ attribute => { alias => '', uri => $_,
 						totals => [[]] } }, @$dim ],
