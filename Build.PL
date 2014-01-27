@@ -13,6 +13,9 @@ my $build = Module::Build->new(
 			repository => 'https://github.com/lkundrak/www-gooddata',
 		}
 	},
+	configure_requires => {
+		'Module::Build' => 0,
+	},
 	requires => {
 		'Getopt::Long' => '2.36',
 		'JSON' => 0,
