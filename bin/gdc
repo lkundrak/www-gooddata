@@ -74,7 +74,7 @@ Defaults to L<https://secure.gooddata.com/gdc/>.
 =cut
 
 new Getopt::Long::Parser (
-	config => [qw/require_order/]
+	config => [qw/require_order no_ignore_case/]
 )->getoptions (
 	'u|user=s' => \$user,
 	'p|password=s' => \$password,
