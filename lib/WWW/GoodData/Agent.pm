@@ -118,8 +118,10 @@ Convenience method for constructing and issuing a DELETE request.
 
 sub delete
 {
-	my ($self, $uri) = @_;
-	return $self->request (new HTTP::Request (DELETE => $uri));
+	my $self = shift;
+	my $uri = shift;
+
+	return $self->request (new HTTP::Request (DELETE => $uri, \@_));
 }
 
 =item request PARAMS
