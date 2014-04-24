@@ -229,6 +229,7 @@ sub login
 		{postUserLogin => {
 			login => $login,
 			password => $password,
+			verify_level => 2,
 			remember => 0}});
 
 	$self->{agent}{GDCAuthSST} = $self->{login}{userLogin}{token};
