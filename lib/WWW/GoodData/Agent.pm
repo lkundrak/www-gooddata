@@ -140,6 +140,10 @@ sub request
 {
 	my ($self, $request, @args) = @_;
 
+	# Ignore Basic authentication for our requests
+	no strict 'refs';
+	local %{'LWP::Authen::Basic::'} = (dummy => 'stash');
+
 	# URI relative to root
 	$request->uri ($request->uri->abs ($self->{root}));
 

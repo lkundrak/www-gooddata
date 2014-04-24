@@ -218,13 +218,6 @@ sub login
 	my $self = shift;
 	my ($login, $password) = @_;
 
-	my $root = new URI ($self->{agent}{root});
-	my $staging = $self->get_uri ('uploads')->abs ($root);
-	my $netloc = $staging->host.':'.$staging->port;
-
-	$self->{agent}->credentials ($netloc,
-		'GoodData project data staging area', $login => $password);
-
 	$self->{login} = $self->{agent}->post ($self->get_uri ('login'),
 		{postUserLogin => {
 			login => $login,
@@ -249,18 +242,6 @@ sub logout
 	my $self = shift;
 
 	die 'Not logged in' unless defined $self->{login};
-
-	# Forget Basic authentication
-	my $root = new URI ($self->{agent}{root});
-	my $staging = $self->get_uri ('uploads')->abs ($root);
-	my $netloc = $staging->host.':'.$staging->port;
-	$self->{agent}->credentials ($netloc,
-		'GoodData project data staging area', undef, undef);
-
-	# The redirect magic does not work for POSTs and we can't really
-	# handle 401s until the API provides reason for them...
-	$self->{agent}->get ($self->get_uri ('token'),
-		'X-GDC-AuthSST' => $self->{agent}{GDCAuthSST});
 
 	$self->{agent}->delete ($self->{login}{userLogin}{state},
 		'X-GDC-AuthSST' => $self->{agent}{GDCAuthSST});
