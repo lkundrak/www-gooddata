@@ -56,8 +56,12 @@ sub authenticate
 		$token_uri->path ($challenge->{location} or '/gdc/account/token');
 		$token_uri->fragment (undef);
 	}
-	$agent->get ($token_uri);
 
+	# Refresh the token
+	$agent->{GDCAuthTT} = $agent->get (new URI ($token_uri),
+		'X-GDC-AuthSST' => $agent->{GDCAuthSST})->{userToken}{token};
+
+	$agent->default_header ('X-GDC-AuthTT' => $agent->{GDCAuthTT});
 	$request->header (Cookie => '');
 
 	# Retry the request

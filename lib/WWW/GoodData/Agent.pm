@@ -143,6 +143,10 @@ sub request
 	# URI relative to root
 	$request->uri ($request->uri->abs ($self->{root}));
 
+	# Level 2 authentication
+	$request->header ('X-GDC-AuthTT' => $self->{GDCAuthTT})
+		if $self->{GDCAuthTT};
+
 	# Issue the request
 	my $response = $self->SUPER::request ($request, @args);
 

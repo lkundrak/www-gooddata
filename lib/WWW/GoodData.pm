@@ -230,6 +230,8 @@ sub login
 			login => $login,
 			password => $password,
 			remember => 0}});
+
+	$self->{agent}{GDCAuthSST} = $self->{login}{userLogin}{token};
 }
 
 =item B<logout>
@@ -256,9 +258,17 @@ sub logout
 
 	# The redirect magic does not work for POSTs and we can't really
 	# handle 401s until the API provides reason for them...
-	$self->{agent}->get ($self->get_uri ('token'));
+	$self->{agent}->get ($self->get_uri ('token'),
+		'X-GDC-AuthSST' => $self->{agent}{GDCAuthSST});
 
-	$self->{agent}->delete ($self->{login}{userLogin}{state});
+	$self->{agent}->delete ($self->{login}{userLogin}{state},
+		'X-GDC-AuthSST' => $self->{agent}{GDCAuthSST});
+
+	# Maybe this needs to go to the agent itself?
+	delete $self->{agent}{GDCAuthSST};
+	delete $self->{agent}{GDCAuthTT};
+	$self->{agent}->default_header ('X-GDCAuthTT' => undef);
+
 	$self->{login} = undef;
 }
 
