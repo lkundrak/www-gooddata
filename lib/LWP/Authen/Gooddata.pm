@@ -48,11 +48,14 @@ sub authenticate
 	die 'Required authentication not supported by client'
 		if $challenge->{cookie} ne 'GDCAuthTT';
 
-	# Refresh the token cookie
-	# We should obtain the URI from WWW::GoodData somehow...
-	my $token_uri = $request->uri->clone;
-	$token_uri->path ('/gdc/account/token');
-	$token_uri->fragment (undef);
+	# Get the token resource location
+	my $token_uri = $challenge->{location};
+	# Compat
+	unless ($token_uri) {
+		$token_uri = $request->uri->clone;
+		$token_uri->path ($challenge->{location} or '/gdc/account/token');
+		$token_uri->fragment (undef);
+	}
 	$agent->get ($token_uri);
 
 	$request->header (Cookie => '');
