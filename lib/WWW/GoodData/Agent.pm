@@ -151,7 +151,7 @@ sub request
 	my $response = $self->SUPER::request ($request, @args);
 
 	# Pass processed response from subrequest (redirect)
-	return $response if ref $response eq 'HASH';
+	return $response if not defined $response or ref $response eq 'HASH';
 
 	# Do not bother checking content and type if there's none
 	return undef if $response->code == 204;
