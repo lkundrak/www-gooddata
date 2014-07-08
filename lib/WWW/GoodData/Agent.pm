@@ -143,17 +143,6 @@ sub request
 	# URI relative to root
 	$request->uri ($request->uri->abs ($self->{root}));
 
-	# Workaround: set SST for /account URIs as cookies would do
-	# Backend sometimes redirects us instead of explaining that it
-	# needs a TT token with a 401
-	if ($request->uri->path =~ /^\/gdc\/account\/token\/(.*)/) {
-		use URI::Escape;
-		$request->uri->path (uri_unescape (uri_unescape ($1)));
-		$self->{GDCAuthTT} = $self->get ('/gdc/account/token',
-			'X-GDC-AuthSST' => $self->{GDCAuthSST})->{userToken}{token};
-		die 'Coult not get TT' unless $self->{GDCAuthTT};
-	};
-
 	# Level 2 authentication
 	$request->header ('X-GDC-AuthTT' => $self->{GDCAuthTT})
 		if $self->{GDCAuthTT};
