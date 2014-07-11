@@ -27,6 +27,7 @@ use warnings;
 use WWW::GoodData::Agent;
 use JSON;
 use URI;
+use URI::Escape;
 
 our $VERSION = '1.11';
 our $root = new URI ('https://secure.gooddata.com/gdc');
@@ -695,6 +696,180 @@ sub create_report_definition
 		}}
 	)->{uri};
 }
+
+=itemB <create_user_filter> PROJECT_URI TITLE ATTRIBUTE_URI VALUE_URIS
+
+Create an user filter object representing the idea of
+the attribute being equal to one of given values
+
+=cut
+
+sub create_user_filter_object
+{
+	my $self = shift;
+	my $project = shift;
+	my $title = shift;
+	my $attr_uri = shift;
+	my @value_uris = @_;
+	
+	my $in_expr = join(', ', map { "[$_]" } @value_uris);
+	my $uri =	$self->get_uri (new URI ($project),
+		{ category => 'self', type => 'project' }, # Validate it's a project
+		qw/metadata/, { category => 'obj'});
+	return $self->{agent}->post ($uri, {
+		userFilter => {
+			content => {
+				expression => "[$attr_uri] IN ($in_expr)"
+			},
+			meta => {
+				category => "userFilter",
+				title => "$title"
+			}
+		}
+	});
+}
+
+=itemB <assign_user_filter> PROJECT_URI LOGIN LABEL VALUES
+
+Create an "attribute IN (values)" filtering expression and
+associate it with a project member specified by login name.
+
+The attribute is specified by the label identifier and the
+values by uploaded values of the selected label (a.k.a the
+attributeDisplayForm).
+
+Example:
+
+$gdc->login($login, $passwd) or die "Unable to authenticate\n";
+
+my @values = ( 'CA', 'CO' );
+my $resp = $gdc->assign_user_filter (
+	"/gdc/projects/abcdabcdabcd0aabcbab",
+	"joe@example.org",
+	"label.region.code",
+	@values);
+
+=cut
+
+sub assign_user_filter
+{
+	my $self = shift;
+	my $project = shift;
+	my $login = shift;
+	my $label_idtf = shift;
+	my @values = @_;
+	
+	my $user_uri = $self->find_member_by_login ($project, $login);
+	my $label = $self->{agent}->get ($self->identifier_to_uri ($project, $label_idtf));
+	my $attr_uri  = $label->{attributeDisplayForm}->{content}->{formOf};
+	my @value_uris = map { $self->value_to_uri ($project, $label, $_) } @values;
+	my $filter_title = "$label_idtf IN (" . join(', ', map { "'$_'" } @values);
+	my $filter_resp = $self->create_user_filter_object ($project, $filter_title, $attr_uri, @value_uris);
+	return $self->assign_user_filter_objects ($project, $user_uri, $filter_resp->{uri});
+}
+
+=itemB <assign_user_filter_object> PROJECT_URI USER_URI FILTER_URI
+
+Associate the given filter object with a project member
+
+=cut
+
+sub assign_user_filter_objects
+{
+	my $self = shift;
+	my $project = shift;
+	my $user_uri = shift;
+	my $filter_uri = shift;
+	
+	my $uri =	$self->get_uri (new URI ($project),
+		{ category => 'self', type => 'project' }, # Validate it's a project
+		qw/metadata/, { category => 'userfilters'});
+	return $self->{agent}->post ($uri, {
+		userFilters => {
+			items => [
+				{
+					user => $user_uri,
+					userFilters => [ $filter_uri ]
+				}
+			]
+		}
+	});
+}
+
+=itemB <find_member_by_login> PROJECT_URI LOGIN
+
+Find a project member by a login name. 
+
+Returns the profile URI.
+
+=cut
+
+sub find_member_by_login
+{
+	my $self = shift;
+	my $project = shift;
+	my $login = shift;
+
+	my $users_uri = $self->get_uri (new URI ($project), { category => 'users' });
+	my @users = $self->{agent}->get ($users_uri)->{users};
+	foreach my $u (@{$users[0]}) {
+		return $u->{user}->{links}->{self} if $u->{user}->{content}->{login} eq $login;
+	}
+	die "User $login is not a member of project $project";
+}
+
+=itemB <identifier_to_uri> PROJECT_URI IDENTIFIER
+
+Converts a project-wide unique object identifier into an object URI
+
+=cut
+
+sub identifier_to_uri
+{
+	my $self = shift;
+	my $project = shift;
+	my $identifier = shift;
+	
+	my $uri =	$self->get_uri (new URI ($project),
+		{ category => 'self', type => 'project' }, # Validate it's a project
+		qw/metadata/, { category => 'instance-identifiers'});
+	my $resp = $self->{agent}->post ($uri, { 'identifierToUri' => [ $identifier ] });
+	return undef unless $resp->{identifiers};
+	return $resp->{identifiers}[0]->{uri};
+}
+
+=item B<value_to_uri> LABEL PROJECT_URI VALUE
+
+Converts the value of a label (passed as an object or specified by
+an identifier) into GoodData's internal attribute element URI.
+
+=cut
+
+sub value_to_uri
+{
+	my $self = shift;
+	my $project = shift;
+	my $label = shift;
+	my $value = shift;
+	
+	unless (ref $label) {
+		my $label_uri = $self->identifier_to_uri ($project, $label)
+			or die "No object with identifier '$label' found";
+		$label = $self->{agent}->get ($label_uri);
+	}
+	my $idtf = $label->{attributeDisplayForm}->{meta}->{identifier};
+	my $value_uri = $label->{attributeDisplayForm}->{links}->{elements} . '?filter=' . uri_escape($value);
+	my $resp = $self->{agent}->get ($value_uri);
+	my $elements = $resp->{attributeElements}->{elements};
+	 
+	if ($elements) {
+		foreach my $e (@$elements) {
+			return $e->{uri} if $e->{title} eq $value;
+		}
+	}
+	die "Value '$value' not found for label '$idtf'";
+}
+
 
 =item B<DESTROY>
 
