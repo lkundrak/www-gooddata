@@ -1,0 +1,7 @@
+Perl WWW::GoodData module. A client for GoodData service https://secure.gooddata.com
+
+Use GoodData platform via the REST-ful HTTP API. See http://developer.gooddata.com/api/
+
+Provide LWP::Authen::Gooddata module to handle GoodData HTTP authentication mechanism.
+See Authenticating to the GoodData API - http://developer.gooddata.com/api/auth.html
+
