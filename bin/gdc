@@ -116,6 +116,7 @@ my %actions = (
 	lsroles => \&lsroles,
 	project => \&project,
 	lsreports => \&lsreports,
+	checkreports => \&checkreports,
 	export => \&export,
 	model => \&model,
 	chmodel => \&chmodel,
@@ -597,6 +598,42 @@ sub export
 	open (my $dump, '>', $file) or die $!;
 	print $dump $document;
 	close ($dump) or die $!;
+}
+
+=head2 checkreports
+
+Verify computability of reports in the project.
+
+=over4
+
+=item B<-P>, B<--project>
+
+Set or override the project to act on.
+See global B<--project> option for the detailed description.
+
+=item B<-v>, B<--verbose>
+
+Verbose output. List the reports and their statuses.
+Otherwise only the number of invalid reports is printed.
+
+=back
+
+=cut
+
+sub checkreports
+{
+	my $this_project = $project;
+	my $verbose;
+
+	GetOptionsFromArray (\@_,
+		'P|project=s' => \$this_project,
+		'v|verbose' => \$verbose,
+	) or die 'Bad arguments to export';
+	$this_project = shift if @_;
+	die 'Extra arguments' if @_;
+
+	my $errs = $gdc->check_reports ($this_project, $verbose);
+	print "Total number of invalid reports found: $errs\n";
 }
 
 =head2 model
