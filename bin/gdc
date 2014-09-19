@@ -114,6 +114,7 @@ my %actions = (
 	mkproject => \&mkproject,
 	mkuser => \&mkuser,
 	lsroles => \&lsroles,
+	lsusers => \&lsusers,
 	project => \&project,
 	lsreports => \&lsreports,
 	export => \&export,
@@ -315,6 +316,67 @@ sub lsroles
 
 	foreach my $role (@{$gdc->get_roles($this_project)}) {
 		print $role."\n";
+	}
+}
+
+=head2 lsusers
+
+Print a list of project users. By default only enabled users of any role are displayed.
+
+=over 4
+
+=item B<-P>, B<--project>
+
+Set or override the project to act on.
+See global B<--project> option for the detailed description.
+
+=item B<-a>, B<--all>
+
+Show all users, not only enabled.
+
+=item B<-v>, B<--long>
+
+Add unnecessary details.
+
+=item B<-R>, B<--role>
+
+Show users of the specified role only.
+
+=back
+
+=cut
+
+sub lsusers
+{
+	my $this_project = $project;
+	my $long;
+	my $all;
+	my $role;
+
+	GetOptionsFromArray( \@_,
+		'P|project=s' => \$this_project,
+		'v|long' => \$long,
+		'a|all' => \$all,
+		'R|role=s' => \$role,
+	) or die 'Bad arguments to lsusers';
+	die 'Extra arguments' if @_;
+
+	die 'No project selected' unless $this_project;
+
+	foreach my $user (@{$gdc->get_users($this_project, $all, $role)}) {
+		$user = $user->{user};
+
+		if ($long) {
+			print "Link: ".$user->{links}{self}."\n";
+			print "\tLogin: ".$user->{content}{login}."\n";
+			print "\tFirst name: ".$user->{content}{firstname}."\n";
+			print "\tLast name: ".$user->{content}{lastname}."\n";
+			print "\tStatus: ".$user->{content}{status}."\n" if $all;
+			print "\tRoles: ".join(', ', @{$user->{content}{userRoles}})."\n";
+		} else {
+			print $user->{links}{self}.' ';
+			print $user->{content}{login}."\n";
+		}
 	}
 }
 
